@@ -6,9 +6,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QMainWindow::showMaximized();
+    _glWidget = ui->glWidget;
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    if (_glWidget) delete _glWidget;
+    if (ui) delete ui;
+}
+
+void MainWindow::on_testButton_clicked()
+{
+    this->close();
 }
