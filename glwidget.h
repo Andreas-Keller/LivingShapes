@@ -8,6 +8,12 @@
 
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
+#include <QOpenGLShaderProgram>
+
+#include <vector>
+
+#include "Shapes/shape.h"
+
 
 class GLWidget : public QOpenGLWidget
 {
@@ -24,6 +30,10 @@ protected:
 private:
     QOpenGLFunctions*   _gl;    //pointer to openGL-Functions
     QColor              _color; //background color of the widget
+
+    //TESTCODE:
+    QOpenGLShaderProgram*_shader;
+    std::vector<Shape*> _shapes;
 };
 
 #endif // GLWIDGET_H

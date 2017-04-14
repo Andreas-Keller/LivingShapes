@@ -25,9 +25,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    glwidget.cpp
+    glwidget.cpp \
+    Shapes/shape.cpp \
+    Shapes/concreteshapes.cpp \
 
 HEADERS  += mainwindow.h \
-    glwidget.h
+    glwidget.h \
+    Shapes/shape.h \
+    Shapes/concreteshapes.h \
 
 FORMS    += mainwindow.ui
+
+DISTFILES += \
+    Shaders/simple.vert.glsl \
+    Shaders/simple.frag.glsl
