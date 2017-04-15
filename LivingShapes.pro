@@ -28,11 +28,13 @@ SOURCES += main.cpp\
     glwidget.cpp \
     Shapes/shape.cpp \
     Shapes/concreteshapes.cpp \
+    camera.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
     Shapes/shape.h \
     Shapes/concreteshapes.h \
+    camera.h
 
 FORMS    += mainwindow.ui
 

@@ -17,6 +17,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void loop();
+
 private slots:
     void on_testButton_clicked();
 

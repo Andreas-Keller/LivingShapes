@@ -8,6 +8,7 @@ Shape::Shape(QOpenGLShaderProgram *shader) :
     _ebo        { QOpenGLBuffer::IndexBuffer },
     _gl         { QOpenGLContext::currentContext()->functions() }
 {
+    _M.setToIdentity();
     Q_ASSERT(_shader);
     Q_ASSERT(_gl);
 }
@@ -25,8 +26,14 @@ void Shape::draw()
 void Shape::draw(QOpenGLShaderProgram *shader)
 {
     shader->bind();
-    _shader->enableAttributeArray(0);
-    _shader->enableAttributeArray(1);
+
+    //set model matrix uniform:
+    int location = shader->uniformLocation("M");
+    if (location == -1) qDebug() << "<Shape::draw> Could not find uniform named \"M\".";
+    _gl->glUniformMatrix4fv(location, 1, GL_FALSE, _M.data());
+
+    shader->enableAttributeArray(0);
+    shader->enableAttributeArray(1);
     _vao.bind();
 
     glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);

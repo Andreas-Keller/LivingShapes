@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Shapes/shape.h"
+#include "camera.h"
 
 
 class GLWidget : public QOpenGLWidget
@@ -30,6 +31,8 @@ protected:
 private:
     QOpenGLFunctions*   _gl;    //pointer to openGL-Functions
     QColor              _color; //background color of the widget
+
+    Camera              _cam;
 
     //TESTCODE:
     QOpenGLShaderProgram*_shader;

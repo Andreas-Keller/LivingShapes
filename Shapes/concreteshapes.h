@@ -31,4 +31,22 @@ private:
 
 
 
+class TriangleEqualSided : public Shape {
+public:
+    TriangleEqualSided(
+        QOpenGLShaderProgram* shader,
+        const QVector2D& widthAndHeight,
+        const QColor& color = QColor(150, 150, 150));
+
+    ~TriangleEqualSided();
+
+private:
+    virtual void initVertices(std::vector<Vertex> &vertices,
+                              std::vector<int> &indices,
+                              const QColor& color) override;
+
+    QVector2D _widthAndHeight;
+};
+
+
 #endif // CONCRETESHAPES_H

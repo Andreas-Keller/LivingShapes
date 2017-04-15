@@ -54,6 +54,9 @@ protected:
 
     std::vector<Vertex>     _vertices;
     int                     _numVertices;
+
+    //Model Matrix:
+    QMatrix4x4              _M;
 };
 
 
