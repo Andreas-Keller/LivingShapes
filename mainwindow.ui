@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>778</width>
-    <height>695</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,13 +17,6 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <layout class="QFormLayout" name="formLayout">
-      <item row="1" column="0">
-       <widget class="QPushButton" name="testButton">
-        <property name="text">
-         <string>Quit</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0" colspan="2">
        <widget class="GLWidget" name="glWidget">
         <property name="sizePolicy">
@@ -43,12 +36,30 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="0">
+       <widget class="QPushButton" name="zoomInButton">
+        <property name="text">
+         <string>Zoom out</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QPushButton" name="testButton">
+        <property name="text">
+         <string>Quit</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="zoomOutButton">
+        <property name="text">
+         <string>Zoom in</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
-   <zorder>glWidget</zorder>
-   <zorder>testButton</zorder>
-   <zorder>testButton</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

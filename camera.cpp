@@ -6,7 +6,9 @@ Camera::Camera(int canvasWidth, int canvasHeight, QVector3D position, float zoom
 {
     _zoom = 200.0;
     _O.setToIdentity();
-    _O.ortho(0.0, (float)canvasWidth, 0.0, (float)canvasHeight, -1.0, 1.0);
+    _O.ortho(
+        -(float)canvasWidth / 2.0, (float)canvasWidth / 2.0,
+        -(float)canvasHeight / 2.0, (float)canvasHeight / 2.0, -1.0, 1.0);
     _V.setToIdentity();
     _V.scale(_zoom);
     _V.translate(_pos);

@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += 3dcore
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,13 +29,15 @@ SOURCES += main.cpp\
     glwidget.cpp \
     Shapes/shape.cpp \
     Shapes/concreteshapes.cpp \
-    camera.cpp
+    camera.cpp \
+    Entities/gameentity.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
     Shapes/shape.h \
     Shapes/concreteshapes.h \
-    camera.h
+    camera.h \
+    Entities/gameentity.h
 
 FORMS    += mainwindow.ui
 

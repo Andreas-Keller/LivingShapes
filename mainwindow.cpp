@@ -27,3 +27,14 @@ void MainWindow::on_testButton_clicked()
 {
     this->close();
 }
+
+//Test buttons, this is better done with mouse wheel input
+void MainWindow::on_zoomOutButton_clicked()
+{
+    _glWidget->camera().setZoom(_glWidget->camera().zoom() + 100.0);
+}
+
+void MainWindow::on_zoomInButton_clicked()
+{
+    _glWidget->camera().setZoom(_glWidget->camera().zoom() - 100.0);
+}

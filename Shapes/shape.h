@@ -35,6 +35,9 @@ public:
     void draw();
     void draw(QOpenGLShaderProgram* shader);
 
+    //set the model matrix:
+    void setMatrix(const QMatrix4x4& matrix)    { _M = matrix; }
+
 protected:
     //MUST be defined in subclasses:
     virtual void initVertices(std::vector<Vertex>& vertices,

@@ -22,6 +22,10 @@ public:
 private slots:
     void on_testButton_clicked();
 
+    void on_zoomOutButton_clicked();
+
+    void on_zoomInButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     GLWidget* _glWidget;
