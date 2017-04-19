@@ -29,18 +29,18 @@ void GLWidget::initializeGL()
     //Play around with this to see what we have so far:
     _entities.push_back(
         new GameEntity{ new Rectangle(_shader, QVector2D{0.2, 0.8}, QColor(200, 0, 100)) });
-    _entities.back()->transform()->setTranslation(QVector3D{ -1.0, -0.5, 0.0 });
+    _entities.back()->transform()->setPos(QVector3D{ -1.0, -0.5, 0.0 });
 
     _entities.push_back(
         new GameEntity{ new TriangleEqualSided(_shader, QVector2D{0.3, 0.3}, QColor(100, 0, 200)) });
 
     _entities.push_back(
         new GameEntity{ new TriangleEqualSided(_shader, QVector2D{0.3, 0.5}, QColor(50, 50, 200)) });
-    _entities.back()->transform()->setTranslation(QVector3D{ 1.0, 1.0, 0.0 });
+    _entities.back()->transform()->setPos(QVector3D{ 1.0, 1.0, 0.0 });
 
     _entities.push_back(
         new GameEntity{ new Rectangle(_shader, QVector2D{0.4, 0.4}, QColor(50, 200, 50)) });
-    _entities.back()->transform()->setTranslation(QVector3D{ 0.5, -0.5, 0.0 });
+    _entities.back()->transform()->setPos(QVector3D{ 0.5, -0.5, 0.0 });
 
      /* END OF TEST CODE --------------------------------------------------------------------- */
 }
