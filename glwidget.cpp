@@ -70,9 +70,6 @@ void GLWidget::paintGL()
 
     _shader->release();
     /* END OF TEST CODE --------------------------------------------------------------------- */
-
-    //force another update (NOT sure if this is the right way to do it):
-    update();
 }
 
 

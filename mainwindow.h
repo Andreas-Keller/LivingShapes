@@ -20,6 +20,8 @@ public:
     void loop();
 
 private slots:
+    void update();
+
     void on_testButton_clicked();
 
     void on_zoomOutButton_clicked();
