@@ -6,7 +6,7 @@
 #include "Shapes/shape.h"
 #include "Shapes/concreteshapes.h"
 #include "transform.h"
-
+#include "aabb.h"
 
 class GameEntity {
 public:
@@ -25,6 +25,7 @@ public:
 protected:
     Shape* _shape;                      //the graphical representation of this entity
     Transform _transform;               //holds position, rotation and scale
+    AABB _aabb;                         //axis-aligned-bounding-box for collision checks
 };
 
 #endif // GAMEENTITY_H

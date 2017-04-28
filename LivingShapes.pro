@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     Shapes/shape.cpp \
     Shapes/concreteshapes.cpp \
     camera.cpp \
-    Entities/gameentity.cpp
+    Entities/gameentity.cpp \
+    Entities/movingentity.cpp \
+    Entities/aabb.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -37,7 +39,9 @@ HEADERS  += mainwindow.h \
     Shapes/concreteshapes.h \
     camera.h \
     Entities/gameentity.h \
-    Entities/transform.h
+    Entities/transform.h \
+    Entities/movingentity.h \
+    Entities/aabb.h
 
 FORMS    += mainwindow.ui
 

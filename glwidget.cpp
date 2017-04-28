@@ -1,6 +1,6 @@
 ﻿#include "glwidget.h"
 #include "Shapes/concreteshapes.h"
-
+#include "Entities/movingentity.h"
 
 #include <QDebug>
 
@@ -39,7 +39,7 @@ void GLWidget::initializeGL()
     _entities.back()->transform()->setPos(QVector3D{ 1.0, 1.0, 0.0 });
 
     _entities.push_back(
-        new GameEntity{ new Circle(_shader, 1.f, 4) });
+        new MovingEntity{ new Circle(_shader, 1.f, 4), 1.f, QVector3D{ 0.1f, 0.1f, 0.f } });
     _entities.back()->transform()->setPos(QVector3D{ 0.5, -0.5, 0.0 });
 
 

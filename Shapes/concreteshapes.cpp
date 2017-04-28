@@ -147,15 +147,15 @@ void Circle::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indic
 
     /*  we now have the following:
 
-        A (v2)
-        |
-        |
-        |
-        +------- B (v1)
-        M (v0)
+        A (v2)                                          v3      (v1+v3)
+        |                                               +------+
+        |                       segmentBreakup()        | / v2 |
+        |                       ---------------->       |/     |
+        +------- B (v1)                                 +------v1
+        M (v0)                                          v0
 
 
-        We now add the vector MA and AB, normalize it. Since the circles radius is always one, this
+        We now add the vectors MA and MB and normalize it. Since the circles radius is always one, this
         normalized vector will always be on the circle. We do this so often as we have segments.
     */
 

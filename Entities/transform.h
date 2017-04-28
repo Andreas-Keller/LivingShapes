@@ -73,4 +73,9 @@ private:
 
 };
 
+//Math helper function: get the translation part from a matrix:
+inline QVector2D getTranslation(const QMatrix4x4& M) {
+    return QVector2D{ M.column(3) };
+}
+
 #endif // TRANSFORM_H
