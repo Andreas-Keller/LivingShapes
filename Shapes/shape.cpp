@@ -36,10 +36,14 @@ void Shape::draw(QOpenGLShaderProgram *shader)
     shader->enableAttributeArray(1);
     _vao.bind();
 
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    //glPointSize(4.f);
     glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);
+    //glDrawArrays(GL_POINTS, 0, _numVertices);
 
     _vao.release();
     shader->release();
+
 }
 
 

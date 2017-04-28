@@ -49,4 +49,24 @@ private:
 };
 
 
+class Circle : public Shape {
+public:
+    Circle(
+        QOpenGLShaderProgram* shader,
+        float radius, int segments,
+        const QColor& color = QColor(150, 150, 150));
+
+    ~Circle();
+
+private:
+    virtual void initVertices(std::vector<Vertex> &vertices,
+                              std::vector<int> &indices,
+                              const QColor& color) override;
+
+   void segmentBreakup(std::vector<Vertex>& vertices);
+
+    float _r;
+    int   _segments;
+};
+
 #endif // CONCRETESHAPES_H

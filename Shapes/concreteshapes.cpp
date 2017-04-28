@@ -1,5 +1,6 @@
 #include "concreteshapes.h"
 
+#include <math.h>
 
 Rectangle::Rectangle(QOpenGLShaderProgram* shader,
         const QVector2D &widthAndHeight,
@@ -108,4 +109,107 @@ void TriangleEqualSided::initVertices(std::vector<Vertex> &vertices, std::vector
     //indices (kind of superfluos here...)
     indices.resize(3);
     indices[0] = 0; indices[1] = 1; indices[2] = 2;
+}
+
+
+Circle::Circle(QOpenGLShaderProgram *shader, float radius, int segments, const QColor &color)
+    : Shape { shader },
+      _r    { radius },
+      _segments{ segments }
+{
+    /* same as above: */
+    std::vector<Vertex> vertices;
+    std::vector<int> indices;
+
+    initVertices(vertices, indices, color);
+    initBuffers(vertices, indices);
+
+    _vertices = vertices;
+
+    _numVertices = indices.size();
+}
+
+Circle::~Circle()
+{
+    _vao.destroy();
+    _ebo.destroy();
+    _vbo.destroy();
+}
+
+void Circle::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices, const QColor &color)
+{
+    //initial vertices:
+    vertices.resize(3);
+    vertices[0].pos = QVector3D{ 0.f, 0.f, 0.f };
+    vertices[1].pos = QVector3D{ 1.f, 0.f, 0.f };
+    vertices[2].pos = QVector3D{ 0.f, 1.f, 0.f };
+
+
+    /*  we now have the following:
+
+        A (v2)
+        |
+        |
+        |
+        +------- B (v1)
+        M (v0)
+
+
+        We now add the vector MA and AB, normalize it. Since the circles radius is always one, this
+        normalized vector will always be on the circle. We do this so often as we have segments.
+    */
+
+    for (size_t i = 0; i < _segments; i++) {
+        segmentBreakup(vertices);
+    }
+
+    //mirror on y-axis
+    int index = vertices.size();
+    for (size_t i = 0; i < index; i++) {
+        Vertex mirrored = vertices[i];
+        mirrored.pos.setX( -vertices[i].pos.x());
+        vertices.push_back(mirrored);
+    }
+
+    //mirror on x-Axis:
+    index = vertices.size();
+    for (size_t i = 0; i < index; i++) {
+        Vertex mirrored = vertices[i];
+        mirrored.pos.setY( -vertices[i].pos.y());
+        vertices.push_back(mirrored);
+    }
+
+    //add the indices:
+    for (size_t i = 1; i < vertices.size()-1; i++) {
+        indices.push_back(0); //every triangle starts from the middle point
+        indices.push_back(i);
+        indices.push_back(i + 1);
+    }
+
+    //colors:
+    float r = color.redF();
+    float g = color.greenF();
+    float b = color.blueF();
+    for (auto& vertex : vertices) {
+        vertex.rgb = QVector3D{ r, g, b };
+    }
+}
+
+
+void Circle::segmentBreakup(std::vector<Vertex>& vertices) {
+
+    std::vector<Vertex> temp = vertices;
+    vertices.clear();
+    vertices.resize(0);
+    vertices.push_back(temp[0]);
+
+    for (size_t i = 1; i < temp.size()-1; i++) {
+        Vertex middle;
+        middle.pos = (temp[i].pos + temp[i + 1].pos);
+        middle.pos.normalize();
+        vertices.push_back(temp[i]);
+        vertices.push_back(middle);
+    }
+
+    vertices.push_back(temp.back());
 }

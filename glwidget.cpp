@@ -1,4 +1,4 @@
-#include "glwidget.h"
+﻿#include "glwidget.h"
 #include "Shapes/concreteshapes.h"
 
 
@@ -39,8 +39,9 @@ void GLWidget::initializeGL()
     _entities.back()->transform()->setPos(QVector3D{ 1.0, 1.0, 0.0 });
 
     _entities.push_back(
-        new GameEntity{ new Rectangle(_shader, QVector2D{0.4, 0.4}, QColor(50, 200, 50)) });
+        new GameEntity{ new Circle(_shader, 1.f, 4) });
     _entities.back()->transform()->setPos(QVector3D{ 0.5, -0.5, 0.0 });
+
 
      /* END OF TEST CODE --------------------------------------------------------------------- */
 }
