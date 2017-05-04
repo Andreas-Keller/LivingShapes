@@ -49,41 +49,6 @@ void AABB::update(QMatrix4x4 M) {
 
     _min = _max = getTranslation(M);
 
-    /* matrix first column (QMatrix has column-row reversed !)
-    if (M(0,0) > 0.0f) {
-        _min.setX(_min.x() + M(0,0) * _minO.x());
-        _max.setX(_max.x() + M(0,0) * _maxO.x());
-    }
-    else {
-        _min.setX(_min.x() + M(0,0) * _maxO.x());
-        _max.setX(_max.x() + M(0,0) * _minO.x());
-    }
-    if (M(1,0) > 0.0f) {
-        _min.setX(_min.x() + M(1,0) * _minO.y());
-        _max.setX(_max.x() + M(1,0) * _maxO.y());
-    }
-    else {
-        _min.setX(_min.x() + M(1,0) * _maxO.y());
-        _max.setX(_max.x() + M(1,0) * _minO.y());
-    }
-    if (M(0,1) > 0.0f) {
-        _min.setY(_min.y() + M(0,1) * _minO.x());
-        _max.setY(_max.y() + M(0,1) * _maxO.x());
-    }
-    else {
-        _min.setY(_min.y() + M(0,1) * _maxO.x());
-        _max.setY(_max.y() + M(0,1) * _minO.x());
-    }
-    if (M(1,1) > 0.0f) {
-        _min.setY(_min.y() + M(1,1) * _minO.y());
-        _max.setY(_max.y() + M(1,1) * _maxO.y());
-    }
-    else {
-        _min.setY(_min.y() + M(1,1) * _maxO.y());
-        _max.setY(_max.y() + M(1,1) * _minO.y());
-    }*/
-
-
     if (M(0,0) > 0.0f) {
         _min.setX(_min.x() + M(0,0) * _minO.x());
         _max.setX(_max.x() + M(0,0) * _maxO.x());

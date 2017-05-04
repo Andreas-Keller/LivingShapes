@@ -18,6 +18,7 @@ public:
     ~MainWindow();
 
     void loop();
+    virtual void keyPressEvent(QKeyEvent* event) override;
 
 private slots:
     void update();

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QTimer>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,6 +30,10 @@ MainWindow::~MainWindow()
 void MainWindow::loop()
 {
 
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    qDebug() << "You pressed " << event->text();
 }
 
 void MainWindow::on_testButton_clicked()
