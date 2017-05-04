@@ -13,5 +13,5 @@ uniform mat4 V; //View matrix
 void main(void)
 {
     gl_Position = O * V * M * vec4(position, 1.0);
-    vcolor = vec4(color, 1.0);
+    vcolor = vec4(color, 0.5f);
 }

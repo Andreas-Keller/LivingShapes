@@ -1,7 +1,9 @@
 #include "gameentity.h"
 
 GameEntity::GameEntity(Shape *shape)
-    : _shape{ shape }
+    : _shape    { shape },
+      _aabb     { Vertex::extractPositions(_shape->vertices()) },
+      _aabbShape{ _shape->shader(), _aabb }
 {
     Q_ASSERT(_shape);
 }
@@ -20,9 +22,12 @@ void GameEntity::update(int deltaTime)
     //for now just a test:
     _transform.setRotationZ(_transform.rotationZ() + float(deltaTime / 10.0));
     _shape->setMatrix(_transform.matrix());
+    _aabb.update(_transform.matrix());
+    _aabbShape.update();
 }
 
 void GameEntity::draw(QOpenGLShaderProgram* shader)
 {
     if (_shape) _shape->draw(shader);
+    _aabbShape.draw(shader);
 }

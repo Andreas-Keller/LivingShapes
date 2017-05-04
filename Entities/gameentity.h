@@ -26,6 +26,8 @@ protected:
     Shape* _shape;                      //the graphical representation of this entity
     Transform _transform;               //holds position, rotation and scale
     AABB _aabb;                         //axis-aligned-bounding-box for collision checks
+
+    AABBShape _aabbShape;               //purely for debugging
 };
 
 #endif // GAMEENTITY_H

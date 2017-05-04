@@ -25,7 +25,7 @@ public:
 
     //getters and setters for zoom and position:
     float       zoom() const            { return _zoom; }
-    void        setZoom(float value)    { _zoom = (value >= _zoomMin)? value : _zoom; }
+    void        setZoom(float value)    { _zoom = (value >= _zoomMin)? value : _zoomMin; }
 
     QVector3D   pos() const             { return _pos; }
     void        setPos(QVector3D pos)   { _pos = pos; }

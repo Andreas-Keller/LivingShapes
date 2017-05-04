@@ -18,6 +18,15 @@ struct Vertex {
     Vertex() {}
     Vertex(const QVector3D& position, const QVector3D& color) : pos{ position }, rgb{ color } {}
 
+    //extract position vectors from an array of vertices:
+    static std::vector<QVector3D> extractPositions(const std::vector<Vertex>& vertices) {
+        std::vector<QVector3D> positions;
+        for (const auto& vertex : vertices) {
+            positions.push_back(vertex.pos);
+        }
+        return positions;
+    }
+
     static int posOffset() { return offsetof(Vertex, pos); }
     static int rgbOffset() { return offsetof(Vertex, rgb); }
     static int stride()    { return sizeof(Vertex); }
@@ -26,17 +35,24 @@ struct Vertex {
     QVector3D rgb;
 };
 
+
 class Shape {
 
 public:
     Shape(QOpenGLShaderProgram* shader);
     virtual ~Shape();
 
-    void draw();
-    void draw(QOpenGLShaderProgram* shader);
+    virtual void draw();
+    virtual void draw(QOpenGLShaderProgram* shader);
 
     //set the model matrix:
     void setMatrix(const QMatrix4x4& matrix)    { _M = matrix; }
+
+    //get the vertices:
+    const std::vector<Vertex>& vertices() const { return _vertices; }
+
+    //ugly ad hoc solution for debugging the aabbs:
+    QOpenGLShaderProgram* shader() { return _shader; }
 
 protected:
     //MUST be defined in subclasses:

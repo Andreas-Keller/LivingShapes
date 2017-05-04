@@ -43,10 +43,10 @@ void MainWindow::update() {
 
 void MainWindow::on_zoomOutButton_clicked()
 {
-    _glWidget->camera().setZoom(_glWidget->camera().zoom() + 100.0);
+    _glWidget->camera().setZoom(_glWidget->camera().zoom() + 20.0);
 }
 
 void MainWindow::on_zoomInButton_clicked()
 {
-    _glWidget->camera().setZoom(_glWidget->camera().zoom() - 100.0);
+    _glWidget->camera().setZoom(_glWidget->camera().zoom() - 20.0);
 }

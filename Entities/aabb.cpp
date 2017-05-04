@@ -1,7 +1,6 @@
 #include "aabb.h"
 #include <math.h>
 
-
 AABB::AABB() {
 
     float min = std::numeric_limits<float>::min();
@@ -42,9 +41,15 @@ void AABB::construct(const std::vector<QVector3D> vertices) {
 /* this is a straight adaption from a game math book: */
 void AABB::update(QMatrix4x4 M) {
 
+    //bail if we are empty:
+    if (isEmpty()) return;
+
+    //debug hint: QMatrix(x,y) has x=row and y=columns
+    //openGL has x=columns, y=row
+
     _min = _max = getTranslation(M);
 
-    /* matrix first column (QMatrix has column-row reversed !) */
+    /* matrix first column (QMatrix has column-row reversed !)
     if (M(0,0) > 0.0f) {
         _min.setX(_min.x() + M(0,0) * _minO.x());
         _max.setX(_max.x() + M(0,0) * _maxO.x());
@@ -52,6 +57,14 @@ void AABB::update(QMatrix4x4 M) {
     else {
         _min.setX(_min.x() + M(0,0) * _maxO.x());
         _max.setX(_max.x() + M(0,0) * _minO.x());
+    }
+    if (M(1,0) > 0.0f) {
+        _min.setX(_min.x() + M(1,0) * _minO.y());
+        _max.setX(_max.x() + M(1,0) * _maxO.y());
+    }
+    else {
+        _min.setX(_min.x() + M(1,0) * _maxO.y());
+        _max.setX(_max.x() + M(1,0) * _minO.y());
     }
     if (M(0,1) > 0.0f) {
         _min.setY(_min.y() + M(0,1) * _minO.x());
@@ -61,15 +74,41 @@ void AABB::update(QMatrix4x4 M) {
         _min.setY(_min.y() + M(0,1) * _maxO.x());
         _max.setY(_max.y() + M(0,1) * _minO.x());
     }
-
-    //Second column:
-    if (M(1,0) > 0.0f) {
-        _min.setX(_min.x() + M(1,0) * _minO.y());
-        _max.setX(_max.x() + M(1,0) * _maxO.y());
+    if (M(1,1) > 0.0f) {
+        _min.setY(_min.y() + M(1,1) * _minO.y());
+        _max.setY(_max.y() + M(1,1) * _maxO.y());
     }
     else {
-        _min.setX(_min.x() + M(1,0) * _maxO.y());
-        _max.setX(_max.x() + M(1,0) * _minO.y());
+        _min.setY(_min.y() + M(1,1) * _maxO.y());
+        _max.setY(_max.y() + M(1,1) * _minO.y());
+    }*/
+
+
+    if (M(0,0) > 0.0f) {
+        _min.setX(_min.x() + M(0,0) * _minO.x());
+        _max.setX(_max.x() + M(0,0) * _maxO.x());
+    }
+    else {
+        _min.setX(_min.x() + M(0,0) * _maxO.x());
+        _max.setX(_max.x() + M(0,0) * _minO.x());
+    }
+    if (M(1,0) > 0.0f) {
+        _min.setY(_min.y() + M(1,0) * _minO.x());
+        _max.setY(_max.y() + M(1,0) * _maxO.x());
+    }
+    else {
+        _min.setY(_min.y() + M(1,0) * _maxO.x());
+        _max.setY(_max.y() + M(1,0) * _minO.x());
+    }
+
+    //Second column:
+    if (M(0,1) > 0.0f) {
+        _min.setX(_min.x() + M(0,1) * _minO.y());
+        _max.setX(_max.x() + M(0,1) * _maxO.y());
+    }
+    else {
+        _min.setX(_min.x() + M(0,1) * _maxO.y());
+        _max.setX(_max.x() + M(0,1) * _minO.y());
     }
     if (M(1,1) > 0.0f) {
         _min.setY(_min.y() + M(1,1) * _minO.y());
@@ -130,6 +169,50 @@ AABBShape::AABBShape(QOpenGLShaderProgram *shader, const AABB &aabb)
     _numVertices = indices.size();
 }
 
+void AABBShape::draw(QOpenGLShaderProgram *shader) {
+    shader->bind();
+
+    //set model matrix uniform:
+    int location = shader->uniformLocation("M");
+    if (location == -1) qDebug() << "<Shape::draw> Could not find uniform named \"M\".";
+    _gl->glUniformMatrix4fv(location, 1, GL_FALSE, _M.data());
+
+    shader->enableAttributeArray(0);
+    shader->enableAttributeArray(1);
+    _vao.bind();
+
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    glPointSize(2.f);
+    glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);
+
+    _vao.release();
+    shader->release();
+
+}
+
+void AABBShape::update() {
+    _vertices.clear();
+    _vertices.resize(0);
+
+    _ebo.destroy();
+    _vbo.destroy();
+    _vao.destroy();
+
+    std::vector<Vertex> vertices;
+    std::vector<int> indices;
+
+    QColor color{ 250, 0, 0 };
+
+    initVertices(vertices, indices, color);
+    initBuffers(vertices, indices);
+
+    //we may need the edge points:
+    _vertices = vertices;
+
+    //and we certainly need the number of indices:
+    _numVertices = indices.size();
+}
+
 void AABBShape::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices, const QColor &color) {
     vertices.resize(4);
     vertices[0].pos = QVector3D{ _aabb.min() };                             //bottom left
@@ -139,4 +222,9 @@ void AABBShape::initVertices(std::vector<Vertex> &vertices, std::vector<int> &in
 
     indices.resize(6);
     indices = { 0, 1, 3, 1, 2, 3 };
+
+    //add colors:
+    for (auto& vertex : vertices) {
+        vertex.rgb = QVector3D{ 1.f, 0.f, 0.f };
+    }
 }

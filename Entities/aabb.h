@@ -49,6 +49,10 @@ class AABBShape : public Shape {
 public:
     AABBShape(QOpenGLShaderProgram* shader, const AABB& aabb);
 
+    virtual void draw(QOpenGLShaderProgram *shader) override;
+
+    //reupload all vertices:
+    void update();
 
 private:
     void initVertices(std::vector<Vertex>& vertices,

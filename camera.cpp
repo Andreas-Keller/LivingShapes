@@ -2,7 +2,8 @@
 
 Camera::Camera(int canvasWidth, int canvasHeight, QVector3D position, float zoom) :
     _pos    { position },
-    _zoom   { zoom }
+    _zoom   { zoom },
+    _zoomMin{ 10.f }
 {
     _zoom = 200.0;
     _O.setToIdentity();

@@ -18,7 +18,9 @@ void GLWidget::initializeGL()
     }
     _gl->glClearColor(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
     _gl->glViewport(0, 0, this->width(), this->height());
-
+    _gl->glEnable(GL_BLEND);
+    //_gl->glBlendFunc(GL_ONE, GL_ONE);
+    _gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     /* TEST CODE ----------------------------------------------------------------------------- */
     _shader = new QOpenGLShaderProgram();
@@ -26,22 +28,37 @@ void GLWidget::initializeGL()
     _shader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/simple.frag.glsl");
     _shader->link();
 
-    //Play around with this to see what we have so far:
-    _entities.push_back(
-        new GameEntity{ new Rectangle(_shader, QVector2D{0.2, 0.8}, QColor(200, 0, 100)) });
-    _entities.back()->transform()->setPos(QVector3D{ -1.0, -0.5, 0.0 });
 
-    _entities.push_back(
-        new GameEntity{ new TriangleEqualSided(_shader, QVector2D{0.3, 0.3}, QColor(100, 0, 200)) });
+    //generate some pseudo-randomized game entities:*/
+    for (size_t i = 0; i < 12; i++) {
+        int type = rand() % 3;
+        float dx = float(rand() % 9 - 4) / 2.f;
+        float dy = float(rand() % 5 - 2) / 2.f;
+        float w = float(rand() % 4 + 1) / 5.f;
+        float h = float(rand() % 4 + 1) / 5.f;
+        float scale = float(rand() % 4 + 1) / 2.f;
+        int r = rand() % 256;
+        int g = rand() % 256;
+        int b = rand() % 256;
 
-    _entities.push_back(
-        new GameEntity{ new TriangleEqualSided(_shader, QVector2D{0.3, 0.5}, QColor(50, 50, 200)) });
-    _entities.back()->transform()->setPos(QVector3D{ 1.0, 1.0, 0.0 });
+        switch(type) {
+        case 0:
+            _entities.push_back(
+                new GameEntity{ new Rectangle(_shader, QVector2D{w, h}, QColor(r, g, b)) });
+            break;
+        case 1:
+            _entities.push_back(
+                new GameEntity{ new TriangleEqualSided(_shader, QVector2D{w, h}, QColor(r, g, b)) });
+            break;
+        case 2:
+            _entities.push_back(
+                new GameEntity{ new Circle(_shader, 1.f, 6, QColor(r, g, b))});
+            break;
+        }
+        _entities.back()->transform()->setPos(QVector3D{ dx, -dy, 0.0 });
+        _entities.back()->transform()->scale(scale);
 
-    _entities.push_back(
-        new MovingEntity{ new Circle(_shader, 1.f, 4), 1.f, QVector3D{ 0.1f, 0.1f, 0.f } });
-    _entities.back()->transform()->setPos(QVector3D{ 0.5, -0.5, 0.0 });
-
+    }
 
      /* END OF TEST CODE --------------------------------------------------------------------- */
 }
