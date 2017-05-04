@@ -32,18 +32,17 @@ void Shape::draw(QOpenGLShaderProgram *shader)
     if (location == -1) qDebug() << "<Shape::draw> Could not find uniform named \"M\".";
     _gl->glUniformMatrix4fv(location, 1, GL_FALSE, _M.data());
 
+    //enable attribute arrays:
     shader->enableAttributeArray(0);
     shader->enableAttributeArray(1);
+
     _vao.bind();
 
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    //glPointSize(4.f);
-    glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);
-    //glDrawArrays(GL_POINTS, 0, _numVertices);
+    //_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); //-->Not supported by OpenGL ES
+    _gl->glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);
 
     _vao.release();
     shader->release();
-
 }
 
 

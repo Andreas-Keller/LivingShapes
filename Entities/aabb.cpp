@@ -181,9 +181,8 @@ void AABBShape::draw(QOpenGLShaderProgram *shader) {
     shader->enableAttributeArray(1);
     _vao.bind();
 
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    glPointSize(2.f);
-    glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);
+    //_gl->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); --> not supported by OpenGL ES
+    _gl->glDrawElements(GL_LINES, _numVertices, GL_UNSIGNED_INT, 0);
 
     _vao.release();
     shader->release();
@@ -220,8 +219,8 @@ void AABBShape::initVertices(std::vector<Vertex> &vertices, std::vector<int> &in
     vertices[2].pos = QVector3D{ _aabb.max() };                             //top right
     vertices[3].pos = QVector3D{ _aabb.min().x(), _aabb.max().y(), 0.0f };  //top left
 
-    indices.resize(6);
-    indices = { 0, 1, 3, 1, 2, 3 };
+    indices.resize(8);
+    indices = { 0, 1, 0, 3, 1, 2, 2, 3 };
 
     //add colors:
     for (auto& vertex : vertices) {

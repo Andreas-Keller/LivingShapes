@@ -1,10 +1,7 @@
-//we break mobile compatibility here:
-#version 330
+attribute vec3 position;
+attribute vec3 color;
 
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 color;
-
-out vec4 vcolor;
+varying vec4 vcolor;
 
 uniform mat4 M; //Model Matrix
 uniform mat4 O; //Orfthonormal matrix
