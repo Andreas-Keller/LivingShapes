@@ -16,11 +16,16 @@
 #include "camera.h"
 
 
-class GLWidget : public QOpenGLWidget
-{
+class GLWidget : public QOpenGLWidget {
+
 public:
     /*  @param parent: The parent window in which the canvas is drawn */
     GLWidget(QWidget* parent, QColor clearColor = QColor(0, 0, 0));
+
+    /* Handle mouse events: */
+    virtual void mousePressEvent(QMouseEvent *event) override;
+    virtual void mouseMoveEvent(QMouseEvent *event) override;
+    virtual void wheelEvent(QWheelEvent *event) override;
 
     //getters for the ui:
     Camera& camera() { return _cam; }
@@ -36,6 +41,8 @@ private:
     QColor              _color; //background color of the widget
 
     Camera              _cam;
+
+    QPoint              _mousePos;
 
     //TESTCODE:
     QOpenGLShaderProgram*    _shader;

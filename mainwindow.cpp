@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 
 #include <QTimer>
-#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,8 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->start();
     timer->setInterval(16);
-
-    loop();
 }
 
 MainWindow::~MainWindow()
@@ -27,31 +24,11 @@ MainWindow::~MainWindow()
     if (ui) delete ui;
 }
 
-void MainWindow::loop()
-{
-
-}
-
-void MainWindow::keyPressEvent(QKeyEvent *event) {
-    qDebug() << "You pressed " << event->text();
-}
-
 void MainWindow::on_testButton_clicked()
 {
     this->close();
 }
 
-//Test buttons, this is better done with mouse wheel input
 void MainWindow::update() {
     _glWidget->update();
-}
-
-void MainWindow::on_zoomOutButton_clicked()
-{
-    _glWidget->camera().setZoom(_glWidget->camera().zoom() + 20.0);
-}
-
-void MainWindow::on_zoomInButton_clicked()
-{
-    _glWidget->camera().setZoom(_glWidget->camera().zoom() - 20.0);
 }

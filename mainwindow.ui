@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>778</width>
-    <height>700</height>
+    <height>756</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,24 +36,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QPushButton" name="zoomInButton">
-        <property name="text">
-         <string>Zoom out</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
+      <item row="1" column="0">
        <widget class="QPushButton" name="testButton">
         <property name="text">
          <string>Quit</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="zoomOutButton">
-        <property name="text">
-         <string>Zoom in</string>
         </property>
        </widget>
       </item>

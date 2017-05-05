@@ -3,6 +3,7 @@
 #include "Entities/movingentity.h"
 
 #include <QDebug>
+#include <QWheelEvent>
 
 GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
     :   QOpenGLWidget{ parent },
@@ -10,6 +11,33 @@ GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
         _color  { clearColor },
         _cam    { this->width(), this->height() }
 {}
+
+
+void GLWidget::mousePressEvent(QMouseEvent *event) {
+    _mousePos = event->pos();
+}
+
+void GLWidget::mouseMoveEvent(QMouseEvent *event) {
+
+    if (event->buttons() & Qt::LeftButton){
+        QPoint delta = event->pos() - _mousePos;
+        float dx = float(delta.x()) / _cam.zoom();
+        float dy = -float(delta.y()) / _cam.zoom();
+        _cam.move(QVector3D{ dx, dy, 0.f });
+    }
+
+    _mousePos = event->pos();
+}
+
+void GLWidget::wheelEvent(QWheelEvent *event) {
+
+    QPoint degrees = event->angleDelta();
+
+    //we ignore the size of the movment:
+    if (degrees.y() == 0) return;
+    else if (degrees.y() > 0) _cam.setZoom(_cam.zoom() + 20.f);
+    else if (degrees.y() < 0) _cam.setZoom(_cam.zoom() - 20.f);
+}
 
 void GLWidget::initializeGL()
 {
@@ -62,7 +90,6 @@ void GLWidget::initializeGL()
 
      /* END OF TEST CODE --------------------------------------------------------------------- */
 }
-
 
 void GLWidget::paintGL()
 {

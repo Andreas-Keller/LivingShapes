@@ -17,17 +17,9 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    void loop();
-    virtual void keyPressEvent(QKeyEvent* event) override;
-
 private slots:
     void update();
-
     void on_testButton_clicked();
-
-    void on_zoomOutButton_clicked();
-
-    void on_zoomInButton_clicked();
 
 private:
     Ui::MainWindow *ui;
