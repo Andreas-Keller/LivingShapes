@@ -30,11 +30,17 @@ public:
     QVector3D   pos() const             { return _pos; }
     void        setPos(QVector3D pos)   { _pos = pos; }
     void        move(QVector3D value)   { _pos += value; }
+    void        rotate(float angle)     { _rot += angle * _sensitivity; }
 
 private:
     QVector3D   _pos;
+    float       _rot;
     float       _zoom;
+
+    //cameras behaviour settings:
     float       _zoomMin;
+    float       _sensitivity; //how fast the cam rotates
+
 
     QMatrix4x4  _O; //orthographic Matrix
     QMatrix4x4  _V; //view Matrix

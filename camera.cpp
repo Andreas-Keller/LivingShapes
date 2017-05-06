@@ -2,8 +2,10 @@
 
 Camera::Camera(int canvasWidth, int canvasHeight, QVector3D position, float zoom) :
     _pos    { position },
+    _rot    { 0.f },
     _zoom   { zoom },
-    _zoomMin{ 10.f }
+    _zoomMin{ 10.f },
+    _sensitivity{ 0.5f }
 {
     _zoom = 200.0;
     _O.setToIdentity();
@@ -24,8 +26,9 @@ Camera::~Camera()
 void Camera::update()
 {
    _V.setToIdentity();
-   _V.scale(_zoom);
    _V.translate(_pos);
+   _V.rotate(_rot, QVector3D{ 0.f, 0.f, 1.f });
+   _V.scale(_zoom);
 }
 
 

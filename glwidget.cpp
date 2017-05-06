@@ -28,9 +28,15 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
 
     if (event->buttons() & Qt::LeftButton){
         QPoint delta = event->pos() - _mousePos;
-        float dx = float(delta.x()) / _cam.zoom();
-        float dy = -float(delta.y()) / _cam.zoom();
+        float dx = float(delta.x());
+        float dy = float(delta.y());
         _cam.move(QVector3D{ dx, dy, 0.f });
+    }
+    else if (event->buttons() & Qt::RightButton) {
+        QPoint delta = event->pos() - _mousePos;
+        float dx =  float(delta.x());
+        float dy = float(delta.y());
+        _cam.rotate(dx + dy);
     }
 
     _mousePos = event->pos();
