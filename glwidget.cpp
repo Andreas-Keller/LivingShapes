@@ -1,6 +1,8 @@
 ﻿#include "glwidget.h"
 #include "Shapes/concreteshapes.h"
+#include "Shapes/shapemaker.h"
 #include "Entities/movingentity.h"
+#include "Shapes/shapemaker.h"
 
 #include <QDebug>
 #include <QWheelEvent>
@@ -15,6 +17,11 @@ GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
 
 void GLWidget::mousePressEvent(QMouseEvent *event) {
     _mousePos = event->pos();
+    setCursor(QCursor{ Qt::CursorShape::OpenHandCursor });
+}
+
+void GLWidget::mouseReleaseEvent(QMouseEvent *event) {
+    setCursor(QCursor{ Qt::CursorShape::ArrowCursor });
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event) {
@@ -58,33 +65,29 @@ void GLWidget::initializeGL()
 
 
     //generate some pseudo-randomized game entities:*/
-    for (size_t i = 0; i < 12; i++) {
+    for (size_t i = 0; i < 20; i++) {
         int type = rand() % 3;
-        float dx = float(rand() % 9 - 4) / 2.f;
-        float dy = float(rand() % 5 - 2) / 2.f;
+        float dx = float(rand() % 13 - 6) / 2.f;
+        float dy = float(rand() % 11 - 4) / 2.f;
         float w = float(rand() % 4 + 1) / 5.f;
         float h = float(rand() % 4 + 1) / 5.f;
-        float scale = float(rand() % 4 + 1) / 2.f;
-        int r = rand() % 256;
-        int g = rand() % 256;
-        int b = rand() % 256;
 
         switch(type) {
         case 0:
             _entities.push_back(
-                new GameEntity{ new Rectangle(_shader, QVector2D{w, h}, QColor(r, g, b)) });
+                new GameEntity{ ShapeMaker::instance(_shader)->get(ShapeType::rectangle) });
             break;
         case 1:
             _entities.push_back(
-                new GameEntity{ new TriangleEqualSided(_shader, QVector2D{w, h}, QColor(r, g, b)) });
+                new GameEntity{ ShapeMaker::instance(_shader)->get(ShapeType::triangle) });
             break;
         case 2:
             _entities.push_back(
-                new GameEntity{ new Circle(_shader, 1.f, 6, QColor(r, g, b))});
+                new GameEntity{ ShapeMaker::instance(_shader)->get(ShapeType::circle) });
             break;
         }
         _entities.back()->transform()->setPos(QVector3D{ dx, -dy, 0.0 });
-        _entities.back()->transform()->scale(scale);
+        _entities.back()->transform()->scale(QVector3D(w, h, 1.f));
 
     }
 
@@ -93,6 +96,15 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
+     /* TEST CODE ----------------------------------------------------------------------------- */
+    //update our gameEntities (THIS SHOULD HAPPEN IN A LOOP SEPERATED FROM DRAWING)
+    int flipDir = 1;
+    for (size_t i = 0; i <_entities.size(); i++) {
+        _entities[i]->update((i+1) * flipDir);
+        flipDir *= -1;
+    }
+    /* END OF TEST CODE --------------------------------------------------------------------- */
+
     _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     _cam.update();
@@ -102,19 +114,11 @@ void GLWidget::paintGL()
     _gl->glUniformMatrix4fv(_shader->uniformLocation("O"), 1, GL_FALSE, _cam.orthoMatrix().data());
     _gl->glUniformMatrix4fv(_shader->uniformLocation("V"), 1, GL_FALSE, _cam.viewMatrix().data());
 
-    /* TEST CODE ----------------------------------------------------------------------------- */
-    //update our gameEntities (THIS SHOULD HAPPEN IN A LOOP SEPERATED FROM DRAWING)
-    int flipDir = 1;
-    for (size_t i = 0; i <_entities.size(); i++) {
-        _entities[i]->update((i+1) * flipDir);
-        flipDir *= -1;
-    }
-
     //draw our gameEntities:
     for (auto& E : _entities) E->draw(_shader);
 
     _shader->release();
-    /* END OF TEST CODE --------------------------------------------------------------------- */
+
 }
 
 

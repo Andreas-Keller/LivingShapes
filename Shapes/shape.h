@@ -42,7 +42,6 @@ public:
     Shape(QOpenGLShaderProgram* shader);
     virtual ~Shape();
 
-    virtual void draw();
     virtual void draw(QOpenGLShaderProgram* shader);
 
     //set the model matrix:

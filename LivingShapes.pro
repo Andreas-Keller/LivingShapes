@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     camera.cpp \
     Entities/gameentity.cpp \
     Entities/movingentity.cpp \
-    Entities/aabb.cpp
+    Entities/aabb.cpp \
+    Shapes/shapemaker.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -41,7 +42,8 @@ HEADERS  += mainwindow.h \
     Entities/gameentity.h \
     Entities/transform.h \
     Entities/movingentity.h \
-    Entities/aabb.h
+    Entities/aabb.h \
+    Shapes/shapemaker.h
 
 FORMS    += mainwindow.ui
 

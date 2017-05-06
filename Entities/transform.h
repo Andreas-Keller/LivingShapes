@@ -59,9 +59,9 @@ public:
     QMatrix4x4 matrix() {
         QMatrix4x4 M;
         M.setToIdentity();
-        M.scale(_scale);
         M.translate(_pos);
         M.rotate(_rot);
+        M.scale(_scale);
         return M;
     }
 

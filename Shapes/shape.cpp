@@ -18,15 +18,8 @@ Shape::~Shape()
 {}
 
 
-void Shape::draw()
-{
-    draw(_shader);
-}
-
 void Shape::draw(QOpenGLShaderProgram *shader)
 {
-    shader->bind();
-
     //set model matrix uniform:
     int location = shader->uniformLocation("M");
     if (location == -1) qDebug() << "<Shape::draw> Could not find uniform named \"M\".";
@@ -42,7 +35,6 @@ void Shape::draw(QOpenGLShaderProgram *shader)
     _gl->glDrawElements(GL_TRIANGLES, _numVertices, GL_UNSIGNED_INT, 0);
 
     _vao.release();
-    shader->release();
 }
 
 
