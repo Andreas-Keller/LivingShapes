@@ -22,14 +22,17 @@ enum class ShapeType {
 
 class ShapeMaker {
 public:
-    static ShapeMaker* instance(QOpenGLShaderProgram* shader);
+    static ShapeMaker* instance();
 
     ~ShapeMaker();
+
+    /* ShapeMaker needs a shader before he can construct anything */
+    void setShader(QOpenGLShaderProgram* shader) { _shader = shader; }
 
     Shape* get(ShapeType type);
 
 private:
-    ShapeMaker(QOpenGLShaderProgram* shader);
+    ShapeMaker();
 
     Shape* _rectangle;
     Shape* _triangle;

@@ -38,6 +38,7 @@ void Shape::draw(QOpenGLShaderProgram *shader)
 }
 
 
+
 void Shape::initBuffers(std::vector<Vertex> &vertices, std::vector<int> &indices)
 {
     //create openGL Buffers:

@@ -1,20 +1,21 @@
 #include "shapemaker.h"
 
-ShapeMaker::ShapeMaker(QOpenGLShaderProgram* shader)
+ShapeMaker::ShapeMaker()
     : _rectangle    { nullptr },
       _triangle     { nullptr },
       _circle       { nullptr },
-      _shader       { shader }
-{
-    Q_ASSERT(shader);
-}
+      _shader       { nullptr }
+{}
 
-ShapeMaker *ShapeMaker::instance(QOpenGLShaderProgram *shader) {
-    static ShapeMaker instance{ shader };
+ShapeMaker *ShapeMaker::instance() {
+    static ShapeMaker instance{ };
     return &instance;
 }
 
 ShapeMaker::~ShapeMaker() {
+
+    Q_ASSERT(_shader);
+
     if (_rectangle) {
         delete _rectangle;
         _rectangle = nullptr;
@@ -31,6 +32,7 @@ ShapeMaker::~ShapeMaker() {
 
 /* One problem: Color is always the same now */
 Shape* ShapeMaker::get(ShapeType type) {
+
     switch (type) {
 
     case ShapeType::rectangle:

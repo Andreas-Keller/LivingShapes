@@ -9,10 +9,12 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLWidget>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLFramebufferObject>
 
 #include <vector>
 
 #include "Entities/gameentity.h"
+#include "Entities/light.h"
 #include "camera.h"
 
 
@@ -38,6 +40,8 @@ protected:
     virtual void    resizeGL(int width, int height) override;
 
 private:
+    void setCameraUniforms(QOpenGLShaderProgram* shader);
+
     QOpenGLFunctions*   _gl;    //pointer to openGL-Functions
     QColor              _color; //background color of the widget
 
@@ -45,9 +49,14 @@ private:
 
     QPoint              _mousePos;
 
+    //for drawing the ligths off-screen:
+    QOpenGLFramebufferObject* _framebuffer;
+
     //TESTCODE:
     QOpenGLShaderProgram*    _shader;
+    QOpenGLShaderProgram*    _lightShader;
     std::vector<GameEntity*> _entities;
+    std::vector<Light*>      _lights;
 };
 
 #endif // GLWIDGET_H

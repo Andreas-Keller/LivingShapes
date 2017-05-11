@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     Entities/gameentity.cpp \
     Entities/movingentity.cpp \
     Entities/aabb.cpp \
-    Shapes/shapemaker.cpp
+    Shapes/shapemaker.cpp \
+    Entities/light.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -43,10 +44,13 @@ HEADERS  += mainwindow.h \
     Entities/transform.h \
     Entities/movingentity.h \
     Entities/aabb.h \
-    Shapes/shapemaker.h
+    Shapes/shapemaker.h \
+    Entities/light.h
 
 FORMS    += mainwindow.ui
 
 DISTFILES += \
     Shaders/simple.vert.glsl \
-    Shaders/simple.frag.glsl
+    Shaders/simple.frag.glsl \
+    Shaders/lights.vert.glsl \
+    Shaders/lights.frag.glsl
