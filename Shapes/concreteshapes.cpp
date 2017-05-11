@@ -193,6 +193,12 @@ void Circle::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indic
     for (auto& vertex : vertices) {
         vertex.rgb = QVector3D{ r, g, b };
     }
+
+    //add uv-coordinates:
+    for (auto& V : vertices) {
+        V.uv.setX(0.5f * (V.pos.x() + 1.f)); //bring from range [-1/1] to [0/1]
+        V.uv.setY(0.5f * (V.pos.y() + 1.f));
+    }
 }
 
 

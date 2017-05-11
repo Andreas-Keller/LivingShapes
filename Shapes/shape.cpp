@@ -28,6 +28,7 @@ void Shape::draw(QOpenGLShaderProgram *shader)
     //enable attribute arrays:
     shader->enableAttributeArray(0);
     shader->enableAttributeArray(1);
+    shader->enableAttributeArray(2);
 
     _vao.bind();
 
@@ -36,7 +37,6 @@ void Shape::draw(QOpenGLShaderProgram *shader)
 
     _vao.release();
 }
-
 
 
 void Shape::initBuffers(std::vector<Vertex> &vertices, std::vector<int> &indices)
@@ -65,12 +65,21 @@ void Shape::initBuffers(std::vector<Vertex> &vertices, std::vector<int> &indices
                 Vertex::posOffset(),
                 3,
                 Vertex::stride());
+
     _shader->enableAttributeArray(1);
     _shader->setAttributeBuffer(
                 1,
                 GL_FLOAT,
                 Vertex::rgbOffset(),
                 3,
+                Vertex::stride());
+
+    _shader->enableAttributeArray(2);
+    _shader->setAttributeBuffer(
+                2,
+                GL_FLOAT,
+                Vertex::uvOffset(),
+                2,
                 Vertex::stride());
 
     //release all buffers:

@@ -28,11 +28,13 @@ struct Vertex {
     }
 
     static int posOffset() { return offsetof(Vertex, pos); }
+    static int uvOffset()  { return offsetof(Vertex, uv); }
     static int rgbOffset() { return offsetof(Vertex, rgb); }
     static int stride()    { return sizeof(Vertex); }
 
     QVector3D pos;
     QVector3D rgb;
+    QVector2D uv;
 };
 
 

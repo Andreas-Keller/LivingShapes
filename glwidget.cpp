@@ -132,6 +132,8 @@ void GLWidget::paintGL()
     }
     /* END OF TEST CODE --------------------------------------------------------------------- */
 
+    _cam.update();
+
     //DRAWING, PASS 1: Draw the lights:
     //_framebuffer->bind();
     _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -144,11 +146,9 @@ void GLWidget::paintGL()
     _lightShader->release();
     //_framebuffer->release();
 
-/*
+    /*
     //DRAWING, PASS 2: Draw the shapes:
     _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    _cam.update();
 
     //bind shader and set camera matrices:
     _shader->bind();
