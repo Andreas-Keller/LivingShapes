@@ -83,12 +83,16 @@ void GLWidget::initializeGL()
     _screenQuad = new Rectangle{ _shader, QVector2D{ 2.f, 2.f} };
 
     /* TEST CODE ----------------------------------------------------------------------------- */
-    //generate a light:
-    ShapeMaker::instance()->setShader(_lightShader);
-    _lights.push_back(new Light{ "light", 3.f });
+    //generate several lights
+
+    ShapeMaker::instance()->setShader(_sceneShader);
+
+    for (size_t i = 0; i < 5; i++) {
+        QVector3D pos =QVector3D{ -2.f + float(i), -2.f + float(i), 0.f };
+        _lights.push_back(new Light{ "light", pos, 2.f });
+    }
 
     //generate some pseudo-randomized game entities:*/
-    ShapeMaker::instance()->setShader(_sceneShader);
     for (size_t i = 0; i < 20; i++) {
         int type = rand() % 3;
         float dx = float(rand() % 13 - 6) / 2.f;
@@ -177,7 +181,9 @@ void GLWidget::initShaders() {
 
 void GLWidget::drawLights() {
     _fbLight->bind();
+    _gl->glBlendFunc(GL_ONE, GL_ONE); //additive blending for the lights
     _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     _lightShader->bind();
 
     setCameraUniforms(_lightShader);
@@ -186,6 +192,8 @@ void GLWidget::drawLights() {
 
     _lightShader->release();
     _fbLight->release();
+
+    _gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void GLWidget::drawScene() {

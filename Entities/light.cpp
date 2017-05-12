@@ -1,6 +1,6 @@
 #include "light.h"
 
-Light::Light(const std::string& texturePath, float radius)
+Light::Light(const std::string& texturePath, const QVector3D& pos, float radius)
     :   GameEntity  { ShapeMaker::instance()->get(ShapeType::circle) },
         _gl         { nullptr },
         _tex        { nullptr },
@@ -15,7 +15,7 @@ Light::Light(const std::string& texturePath, float radius)
     _tex->create();
     _gl = QOpenGLContext::currentContext()->functions();
     _transform.scale(_r);
-
+    _transform.setPos(pos);
 
     Q_ASSERT(_tex->isCreated());
 }

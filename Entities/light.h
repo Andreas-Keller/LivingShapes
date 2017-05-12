@@ -19,7 +19,7 @@
 
 class Light : public GameEntity {
 public:
-    Light(const std::string& texturePath, float radius = 1.f);
+    Light(const std::string& texturePath, const QVector3D& pos = QVector3D{ 0.f, 0.f, 0.f }, float radius = 1.f);
     ~Light();
 
     virtual void draw(QOpenGLShaderProgram* shader) override;
