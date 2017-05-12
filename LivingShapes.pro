@@ -53,4 +53,8 @@ DISTFILES += \
     Shaders/simple.vert.glsl \
     Shaders/simple.frag.glsl \
     Shaders/lights.vert.glsl \
-    Shaders/lights.frag.glsl
+    Shaders/lights.frag.glsl \
+    Shaders/scene.frag.glsl \
+    Shaders/scene.vert.glsl \
+    Shaders/final.vert.glsl \
+    Shaders/final.frag.glsl

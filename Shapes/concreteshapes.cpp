@@ -51,6 +51,12 @@ void Rectangle::initVertices(std::vector<Vertex>& vertices,
     vertices[2].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
     vertices[3].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
 
+    //assign uv-coordinates:
+    for (auto& V : vertices) {
+        V.uv.setX(0.5f * (V.pos.x() + 1.f)); //bring from range [-1/1] to [0/1]
+        V.uv.setY(0.5f * (V.pos.y() + 1.f));
+    }
+
     //assign the indices:
     indices.resize(6);
     indices[0] = 0; indices[1] = 1; indices[2] = 3; //first triangle

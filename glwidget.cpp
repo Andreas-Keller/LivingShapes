@@ -10,11 +10,13 @@
 GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
     :   QOpenGLWidget{ parent },
         _gl         { nullptr },
+        _fbLight    { nullptr },
+        _fbScene    { nullptr },
         _shader     { nullptr },
         _lightShader{ nullptr },
+        _screenQuad { nullptr },
         _color      { clearColor },
-        _cam        { this->width(), this->height() },
-        _framebuffer{ nullptr }
+        _cam        { this->width(), this->height() }
 {}
 
 
@@ -66,32 +68,27 @@ void GLWidget::initializeGL()
     //_gl->glBlendFunc(GL_ONE, GL_ONE);
     _gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //Create the shapes shader:
-    _shader = new QOpenGLShaderProgram();
-    _shader->addShaderFromSourceFile(QOpenGLShader::Vertex, "Shaders/simple.vert.glsl");
-    _shader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/simple.frag.glsl");
-    _shader->link();
-
-    //Create the light shader:
-    _lightShader = new QOpenGLShaderProgram();
-    _lightShader->addShaderFromSourceFile(QOpenGLShader::Vertex, "Shaders/lights.vert.glsl");
-    _lightShader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/lights.frag.glsl");
-    _lightShader->link();
+    initShaders();
 
     //Give the shape shader to our ShapeMaker:
     ShapeMaker::instance()->setShader(_shader);
 
     //initialize the framebuffer with a const size:
-    _framebuffer = new QOpenGLFramebufferObject{ 1024, 1024 };
-    Q_ASSERT(_framebuffer->isValid());
+    _fbLight = new QOpenGLFramebufferObject{ this->width(), this->height() };
+    Q_ASSERT(_fbLight->isValid());
+    _fbScene = new QOpenGLFramebufferObject{ this->width(), this->height() };
+    Q_ASSERT(_fbScene->isValid());
+
+    //initialize the screen-filling quad:
+    _screenQuad = new Rectangle{ _shader, QVector2D{ 2.f, 2.f} };
 
     /* TEST CODE ----------------------------------------------------------------------------- */
     //generate a light:
     ShapeMaker::instance()->setShader(_lightShader);
-    _lights.push_back(new Light{ "light", 1.f });
+    _lights.push_back(new Light{ "light", 3.f });
 
     //generate some pseudo-randomized game entities:*/
-    ShapeMaker::instance()->setShader(_shader);
+    ShapeMaker::instance()->setShader(_sceneShader);
     for (size_t i = 0; i < 20; i++) {
         int type = rand() % 3;
         float dx = float(rand() % 13 - 6) / 2.f;
@@ -130,12 +127,56 @@ void GLWidget::paintGL()
         _entities[i]->update((i+1) * flipDir);
         flipDir *= -1;
     }
+    for (auto& L : _lights) {
+        L->update(16);
+    }
     /* END OF TEST CODE --------------------------------------------------------------------- */
 
     _cam.update();
 
-    //DRAWING, PASS 1: Draw the lights:
-    //_framebuffer->bind();
+    //DRAW THE SCENE IN 3 STEPS:
+    drawLights();
+    drawScene();
+    drawFinal();
+}
+
+
+void GLWidget::resizeGL(int width, int height)
+{
+    _gl->glViewport(0, 0, width, height);
+    _cam.resize(width, height);
+
+    //we also need to resize our framebuffers:
+    delete _fbScene;
+    _fbScene = new QOpenGLFramebufferObject{ width, height };
+    Q_ASSERT(_fbScene->isValid());
+    delete _fbLight;
+    _fbLight = new QOpenGLFramebufferObject{ width, height };
+    Q_ASSERT(_fbLight->isValid());
+}
+
+void GLWidget::initShaders() {
+    //Create the final shader:
+    _shader = new QOpenGLShaderProgram();
+    _shader->addShaderFromSourceFile(QOpenGLShader::Vertex, "Shaders/final.vert.glsl");
+    _shader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/final.frag.glsl");
+    _shader->link();
+
+    //Create the light shader:
+    _lightShader = new QOpenGLShaderProgram();
+    _lightShader->addShaderFromSourceFile(QOpenGLShader::Vertex, "Shaders/lights.vert.glsl");
+    _lightShader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/lights.frag.glsl");
+    _lightShader->link();
+
+    //Create the scene shader:
+    _sceneShader = new QOpenGLShaderProgram();
+    _sceneShader->addShaderFromSourceFile(QOpenGLShader::Vertex, "Shaders/scene.vert.glsl");
+    _sceneShader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/scene.frag.glsl");
+    _sceneShader->link();
+}
+
+void GLWidget::drawLights() {
+    _fbLight->bind();
     _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     _lightShader->bind();
 
@@ -144,29 +185,53 @@ void GLWidget::paintGL()
     for (auto& L : _lights) L->draw(_lightShader);
 
     _lightShader->release();
-    //_framebuffer->release();
+    _fbLight->release();
+}
 
-    /*
-    //DRAWING, PASS 2: Draw the shapes:
+void GLWidget::drawScene() {
+    _fbScene->bind();
     _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //bind shader and set camera matrices:
-    _shader->bind();
-    setCameraUniforms(_shader);
+    _sceneShader->bind();
+    setCameraUniforms(_sceneShader);
 
     //draw our gameEntities:
-    for (auto& E : _entities) E->draw(_shader);
+    for (auto& E : _entities) E->draw(_sceneShader);
 
-    _shader->release();*/
+    _sceneShader->release();
+    _fbScene->release();
 }
 
+void GLWidget::drawFinal() {
+    _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-void GLWidget::resizeGL(int width, int height)
-{
-    _gl->glViewport(0, 0, width, height);
-    _cam.resize(width, height);
+    _shader->bind();
+
+    //bind the textures from our two framebuffers:
+    int sceneTex = _shader->uniformLocation("sceneTex");
+    int lightTex = _shader->uniformLocation("lightTex");
+
+    /*
+    if (sceneTex == -1) {
+        qDebug() << "<GlWidget::draw> Could not find texture uniform sceneTex.";
+    }
+    if (lightTex == -1) {
+        qDebug() << "<GlWidget::draw> Could not find texture uniform lightTex.";
+    }*/
+
+    _gl->glActiveTexture(GL_TEXTURE0);
+    _gl->glBindTexture(GL_TEXTURE_2D, _fbScene->texture());
+    _gl->glUniform1i(sceneTex, 0);
+
+    _gl->glActiveTexture(GL_TEXTURE1);
+    _gl->glBindTexture(GL_TEXTURE_2D, _fbLight->texture());
+    _gl->glUniform1i(lightTex, 1);
+
+    _screenQuad->draw(_shader);
+
+    _shader->release();
 }
-
 
 void GLWidget::setCameraUniforms(QOpenGLShaderProgram* shader) {
     _gl->glUniformMatrix4fv(shader->uniformLocation("O"), 1, GL_FALSE, _cam.orthoMatrix().data());

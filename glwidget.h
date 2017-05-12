@@ -40,6 +40,10 @@ protected:
     virtual void    resizeGL(int width, int height) override;
 
 private:
+    void initShaders();
+    void drawLights();
+    void drawScene();
+    void drawFinal();
     void setCameraUniforms(QOpenGLShaderProgram* shader);
 
     QOpenGLFunctions*   _gl;    //pointer to openGL-Functions
@@ -50,11 +54,16 @@ private:
     QPoint              _mousePos;
 
     //for drawing the ligths off-screen:
-    QOpenGLFramebufferObject* _framebuffer;
+    QOpenGLFramebufferObject* _fbLight;
+    QOpenGLFramebufferObject* _fbScene;
+
+    Rectangle*                _screenQuad; //a quad filling the screen, needed to draw the framebuffers into
+
 
     //TESTCODE:
-    QOpenGLShaderProgram*    _shader;
-    QOpenGLShaderProgram*    _lightShader;
+    QOpenGLShaderProgram*    _shader;      //shader for the final on-screen-drawing
+    QOpenGLShaderProgram*    _lightShader; //shader for drawing the lights
+    QOpenGLShaderProgram*    _sceneShader; //shader for drawing the scene objects
     std::vector<GameEntity*> _entities;
     std::vector<Light*>      _lights;
 };
