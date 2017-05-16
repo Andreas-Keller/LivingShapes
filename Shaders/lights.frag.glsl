@@ -1,9 +1,17 @@
-varying vec2 vUv;
-varying vec3 vColor;
+#version 300 es
+
+#undef mediump	//very ugly hack due to qt shader manipulation
+
+precision mediump float;	
+
+in vec2 vUv;
+in vec3 vColor;
+
+out vec4 color;
 
 uniform sampler2D image;
 
 void main(void)
 {
-    gl_FragColor = texture2D(image, vUv);
+    color = texture2D(image, vUv);
 }

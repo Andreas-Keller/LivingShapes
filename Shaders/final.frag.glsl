@@ -1,7 +1,13 @@
-//precision mediump float;
+#version 300 es
 
-varying vec2 vUv;
-varying vec3 vColor;
+#undef mediump	//very ugly hack due to qt shader manipulation
+
+precision mediump float;	
+
+in vec2 vUv;
+in vec3 vColor;
+
+out vec4 color;
 
 uniform sampler2D sceneTex;
 uniform sampler2D lightTex;
@@ -12,5 +18,5 @@ void main(void)
     vec4 objectColor = texture2D(sceneTex, vUv);
 
 	//gl_FragColor = lightColor;
-    gl_FragColor = objectColor * lightColor + objectColor * 0.1f;
+    color = objectColor * lightColor + objectColor * 0.1f;
 }

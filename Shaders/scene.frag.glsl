@@ -1,9 +1,15 @@
-//precision mediump float;
+#version 300 es
 
-varying vec4 vColor;
-varying vec2 vUv;
+#undef mediump	//very ugly hack due to qt shader manipulation
+
+precision mediump float;
+	
+in vec4 vColor;
+in vec2 vUv;
+
+out vec4 color;
 
 void main(void)
 {
-    gl_FragColor = vColor;
+    color = vColor;
 }
