@@ -5,7 +5,6 @@
 precision mediump float;	
 
 in vec2 vUv;
-in vec3 vColor;
 
 out vec4 color;
 

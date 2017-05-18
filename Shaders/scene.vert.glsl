@@ -1,12 +1,12 @@
 #version 300 es
 
 #undef mediump	//very ugly hack due to qt shader manipulation
+#undef highp
 
 precision mediump float;	
 
 layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 color;
-layout (location = 2) in vec2 uv;
+layout (location = 1) in vec2 uv;
 
 out vec2 vUv;
 out vec4 vColor;
@@ -14,6 +14,8 @@ out vec4 vColor;
 uniform mat4 M; //Model Matrix
 uniform mat4 O; //Orfthonormal matrix
 uniform mat4 V; //View matrix
+
+uniform vec3 color;
 
 void main(void)
 {
