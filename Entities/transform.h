@@ -17,7 +17,6 @@ public:
     Transform() : _scale{ QVector3D(1.f, 1.f, 1.f) } {}
     ~Transform() {}
 
-
     /* setters: */
     void setPos (const QVector3D& pos)   { _pos = pos; }
     void move   (const QVector3D& val)   { _pos += val; }
@@ -76,6 +75,11 @@ private:
 //Math helper function: get the translation part from a matrix:
 inline QVector2D getTranslation(const QMatrix4x4& M) {
     return QVector2D{ M.column(3) };
+}
+
+//Math helper: Get the perpendicular vector (ONLY FOR 2D !!)
+inline QVector3D getNormal(const QVector3D& vector) {
+    return QVector3D{ -vector.y(), vector.x(), vector.z() };
 }
 
 #endif // TRANSFORM_H

@@ -116,7 +116,7 @@ bool AABB::intersection(const AABB &box1, const AABB &box2, AABB *intersectionBo
 
 /* Purely for debugging: */
 AABBShape::AABBShape(QOpenGLShaderProgram *shader, const AABB &aabb)
-    : Shape{ shader },
+    : Shape{ shader, QColor{ 250, 0, 0 } },
       _aabb{ aabb }
 {
     std::vector<Vertex> vertices;
@@ -124,7 +124,7 @@ AABBShape::AABBShape(QOpenGLShaderProgram *shader, const AABB &aabb)
 
     QColor color{ 250, 0, 0 };
 
-    initVertices(vertices, indices, color);
+    initVertices(vertices, indices);
     initBuffers(vertices, indices);
 
     //we may need the edge points:
@@ -138,7 +138,12 @@ void AABBShape::draw(QOpenGLShaderProgram *shader) {
     //set model matrix uniform:
     int location = shader->uniformLocation("M");
     if (location == -1) qDebug() << "<Shape::draw> Could not find uniform named \"M\".";
+
     _gl->glUniformMatrix4fv(location, 1, GL_FALSE, _M.data());
+
+    //set color uniform:
+    location = shader->uniformLocation("color");
+    _gl->glUniform3f(location, _color.x(), _color.y(), _color.z());
 
     shader->enableAttributeArray(0);
     shader->enableAttributeArray(1);
@@ -163,7 +168,7 @@ void AABBShape::update() {
 
     QColor color{ 250, 0, 0 };
 
-    initVertices(vertices, indices, color);
+    initVertices(vertices, indices);
     initBuffers(vertices, indices);
 
     //we may need the edge points:
@@ -173,7 +178,7 @@ void AABBShape::update() {
     _numVertices = indices.size();
 }
 
-void AABBShape::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices, const QColor &color) {
+void AABBShape::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices) {
     vertices.resize(4);
     vertices[0].pos = QVector3D{ _aabb.min() };                             //bottom left
     vertices[1].pos = QVector3D{ _aabb.max().x(), _aabb.min().y(), 0.0f };  //bottom right
@@ -182,9 +187,4 @@ void AABBShape::initVertices(std::vector<Vertex> &vertices, std::vector<int> &in
 
     indices.resize(8);
     indices = { 0, 1, 0, 3, 1, 2, 2, 3 };
-
-    //add colors:
-    for (auto& vertex : vertices) {
-        vertex.rgb = QVector3D{ 1.f, 0.f, 0.f };
-    }
 }

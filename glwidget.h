@@ -13,6 +13,7 @@
 
 #include <vector>
 
+#include "Grafics/GaussBlur.hpp"
 #include "Entities/gameentity.h"
 #include "Entities/light.h"
 #include "camera.h"
@@ -66,6 +67,15 @@ private:
     QOpenGLShaderProgram*    _sceneShader; //shader for drawing the scene objects
     std::vector<GameEntity*> _entities;
     std::vector<Light*>      _lights;
+
+    //MORE TESTS: CREATE NEW ENTITYS ON MOUSE CLICK:
+    std::vector<QVector3D>   _newEntPos;
+
+    //gauss Blur:
+    GaussBlur*              _gauss;
+
+    //how big the lightmap is compared to the viewport (decrease for better performance)
+    float _lightmapScale;
 };
 
 #endif // GLWIDGET_H

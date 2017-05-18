@@ -12,11 +12,12 @@
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLFunctions>
+#include <QColor>
 
 /* helper struct: */
 struct Vertex {
     Vertex() {}
-    Vertex(const QVector3D& position, const QVector3D& color) : pos{ position }, rgb{ color } {}
+    Vertex(const QVector3D& position) : pos{ position } {}
 
     //extract position vectors from an array of vertices:
     static std::vector<QVector3D> extractPositions(const std::vector<Vertex>& vertices) {
@@ -29,11 +30,9 @@ struct Vertex {
 
     static int posOffset() { return offsetof(Vertex, pos); }
     static int uvOffset()  { return offsetof(Vertex, uv); }
-    static int rgbOffset() { return offsetof(Vertex, rgb); }
     static int stride()    { return sizeof(Vertex); }
 
     QVector3D pos;
-    QVector3D rgb;
     QVector2D uv;
 };
 
@@ -41,7 +40,7 @@ struct Vertex {
 class Shape {
 
 public:
-    Shape(QOpenGLShaderProgram* shader);
+    Shape(QOpenGLShaderProgram* shader, const QColor& color = QColor(150, 150, 150));
     virtual ~Shape();
 
     virtual void draw(QOpenGLShaderProgram* shader);
@@ -52,17 +51,22 @@ public:
     //get the vertices:
     const std::vector<Vertex>& vertices() const { return _vertices; }
 
+    //getter and setter for color:
+    QVector3D color() const                     { return _color; }
+    void      setColor(const QVector3D& color)  { _color = color; }
+
     //ugly ad hoc solution for debugging the aabbs:
     QOpenGLShaderProgram* shader() { return _shader; }
 
 protected:
     //MUST be defined in subclasses:
     virtual void initVertices(std::vector<Vertex>& vertices,
-                              std::vector<int>& indices,
-                              const QColor& color) = 0;
+                              std::vector<int>& indices) = 0;
 
     virtual void initBuffers(std::vector<Vertex>& vertices,
                              std::vector<int>& indices);
+
+    QVector3D               _color;
 
     //openGF-Stuff:
     QOpenGLShaderProgram*   _shader;

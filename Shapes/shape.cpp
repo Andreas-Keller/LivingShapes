@@ -2,7 +2,8 @@
 
 #include <QDebug>
 
-Shape::Shape(QOpenGLShaderProgram *shader) :
+Shape::Shape(QOpenGLShaderProgram *shader, const QColor& color) :
+    _color      { QVector3D{ color.redF(), color.greenF(), color.blueF() } },
     _shader     { shader },
     _vbo        { QOpenGLBuffer::VertexBuffer },
     _ebo        { QOpenGLBuffer::IndexBuffer },
@@ -22,8 +23,12 @@ void Shape::draw(QOpenGLShaderProgram *shader)
 {
     //set model matrix uniform:
     int location = shader->uniformLocation("M");
-    if (location == -1) qDebug() << "<Shape::draw> Could not find uniform named \"M\".";
+    //if (location == -1) qDebug() << "<Shape::draw> Could not find uniform named \"M\".";
     _gl->glUniformMatrix4fv(location, 1, GL_FALSE, _M.data());
+
+    //set color uniform:
+    location = shader->uniformLocation("color");
+    _gl->glUniform3f(location, _color.x(), _color.y(), _color.z());
 
     //enable attribute arrays:
     shader->enableAttributeArray(0);
@@ -69,14 +74,6 @@ void Shape::initBuffers(std::vector<Vertex> &vertices, std::vector<int> &indices
     _shader->enableAttributeArray(1);
     _shader->setAttributeBuffer(
                 1,
-                GL_FLOAT,
-                Vertex::rgbOffset(),
-                3,
-                Vertex::stride());
-
-    _shader->enableAttributeArray(2);
-    _shader->setAttributeBuffer(
-                2,
                 GL_FLOAT,
                 Vertex::uvOffset(),
                 2,

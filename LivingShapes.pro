@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     Entities/movingentity.cpp \
     Entities/aabb.cpp \
     Shapes/shapemaker.cpp \
-    Entities/light.cpp
+    Entities/light.cpp \
+    Grafics/GaussBlur.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -45,7 +46,8 @@ HEADERS  += mainwindow.h \
     Entities/movingentity.h \
     Entities/aabb.h \
     Shapes/shapemaker.h \
-    Entities/light.h
+    Entities/light.h \
+    Grafics/GaussBlur.hpp
 
 FORMS    += mainwindow.ui
 
@@ -57,4 +59,6 @@ DISTFILES += \
     Shaders/scene.frag.glsl \
     Shaders/scene.vert.glsl \
     Shaders/final.vert.glsl \
-    Shaders/final.frag.glsl
+    Shaders/final.frag.glsl \
+    Shaders/gaussianBlur.frag.glsl \
+    Shaders/gaussianBlur.vert.glsl

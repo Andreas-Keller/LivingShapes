@@ -6,14 +6,14 @@ Rectangle::Rectangle(QOpenGLShaderProgram* shader,
         const QVector2D &widthAndHeight,
         const QColor &color
         )
-    : Shape{ shader },
+    : Shape{ shader, color },
       _widthAndHeight{ widthAndHeight }
 
 {
     std::vector<Vertex> vertices;
     std::vector<int> indices;
 
-    initVertices(vertices, indices, color);
+    initVertices(vertices, indices);
     initBuffers(vertices, indices);
 
     //we may need the edge points:
@@ -31,8 +31,7 @@ Rectangle::~Rectangle()
 }
 
 void Rectangle::initVertices(std::vector<Vertex>& vertices,
-                             std::vector<int>& indices,
-                             const QColor& color)
+                             std::vector<int>& indices)
 {
     //calculate the edge points:
     float offsetX = _widthAndHeight.x() * 0.5;
@@ -44,12 +43,6 @@ void Rectangle::initVertices(std::vector<Vertex>& vertices,
     vertices[1].pos = QVector3D{ offsetX, -offsetY, offsetZ };  //bottom right
     vertices[2].pos = QVector3D{ offsetX, offsetY, offsetZ };   //top right
     vertices[3].pos = QVector3D{ -offsetX, offsetY, offsetZ };  //top left
-
-    //assign color (we may support gradients in the future):
-    vertices[0].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
-    vertices[1].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
-    vertices[2].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
-    vertices[3].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
 
     //assign uv-coordinates:
     for (auto& V : vertices) {
@@ -73,14 +66,14 @@ TriangleEqualSided::TriangleEqualSided(
         const QVector2D &widthAndHeight,
         const QColor &color
         )
-    : Shape{ shader },
+    : Shape{ shader, color },
        _widthAndHeight{ widthAndHeight }
 {
     /* same as above: */
     std::vector<Vertex> vertices;
     std::vector<int> indices;
 
-    initVertices(vertices, indices, color);
+    initVertices(vertices, indices);
     initBuffers(vertices, indices);
 
     _vertices = vertices;
@@ -96,7 +89,7 @@ TriangleEqualSided::~TriangleEqualSided()
     _vbo.destroy();
 }
 
-void TriangleEqualSided::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices, const QColor &color)
+void TriangleEqualSided::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices)
 {
     float w = _widthAndHeight.x();
     float h = _widthAndHeight.y();
@@ -107,11 +100,6 @@ void TriangleEqualSided::initVertices(std::vector<Vertex> &vertices, std::vector
     vertices[1].pos = QVector3D{ w / 2.0f, -h / 3.0f, 0.0 };
     vertices[2].pos = QVector3D{ 0, h * 2.0f / 3.0f, 0.0 };
 
-    //color
-    vertices[0].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
-    vertices[1].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
-    vertices[2].rgb = QVector3D{ float(color.redF()), float(color.greenF()), float(color.blueF()) };
-
     //indices (kind of superfluos here...)
     indices.resize(3);
     indices[0] = 0; indices[1] = 1; indices[2] = 2;
@@ -119,7 +107,7 @@ void TriangleEqualSided::initVertices(std::vector<Vertex> &vertices, std::vector
 
 
 Circle::Circle(QOpenGLShaderProgram *shader, float radius, int segments, const QColor &color)
-    : Shape { shader },
+    : Shape { shader, color },
       _r    { radius },
       _segments{ segments }
 {
@@ -127,7 +115,7 @@ Circle::Circle(QOpenGLShaderProgram *shader, float radius, int segments, const Q
     std::vector<Vertex> vertices;
     std::vector<int> indices;
 
-    initVertices(vertices, indices, color);
+    initVertices(vertices, indices);
     initBuffers(vertices, indices);
 
     _vertices = vertices;
@@ -142,7 +130,9 @@ Circle::~Circle()
     _vbo.destroy();
 }
 
-void Circle::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices, const QColor &color)
+/* ---------------------------------------------------------------------------------------------------- */
+
+void Circle::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices)
 {
     //initial vertices:
     vertices.resize(3);
@@ -165,13 +155,13 @@ void Circle::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indic
         normalized vector will always be on the circle. We do this so often as we have segments.
     */
 
-    for (size_t i = 0; i < _segments; i++) {
+    for (int i = 0; i < _segments; i++) {
         segmentBreakup(vertices);
     }
 
     //mirror on y-axis
     int index = vertices.size();
-    for (size_t i = 0; i < index; i++) {
+    for (int i = 0; i < index; i++) {
         Vertex mirrored = vertices[i];
         mirrored.pos.setX( -vertices[i].pos.x());
         vertices.push_back(mirrored);
@@ -179,7 +169,7 @@ void Circle::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indic
 
     //mirror on x-Axis:
     index = vertices.size();
-    for (size_t i = 0; i < index; i++) {
+    for (int i = 0; i < index; i++) {
         Vertex mirrored = vertices[i];
         mirrored.pos.setY( -vertices[i].pos.y());
         vertices.push_back(mirrored);
@@ -190,14 +180,6 @@ void Circle::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indic
         indices.push_back(0); //every triangle starts from the middle point
         indices.push_back(i);
         indices.push_back(i + 1);
-    }
-
-    //colors:
-    float r = color.redF();
-    float g = color.greenF();
-    float b = color.blueF();
-    for (auto& vertex : vertices) {
-        vertex.rgb = QVector3D{ r, g, b };
     }
 
     //add uv-coordinates:
@@ -225,3 +207,61 @@ void Circle::segmentBreakup(std::vector<Vertex>& vertices) {
 
     vertices.push_back(temp.back());
 }
+
+/* ---------------------------------------------------------------------------------------------------- */
+
+Line::Line(QOpenGLShaderProgram* shader, const QVector3D& start, const QVector3D& end, const QColor& color)
+    :   Shape   { shader, color },
+        _start  { start }
+{
+    _dir = QVector3D(end - start).normalized();
+    _kMax = QVector3D(end - start).length();
+
+    std::vector<Vertex> vertices;
+    std::vector<int> indices;
+
+    initVertices(vertices, indices);
+    initBuffers(vertices, indices);
+
+    _vertices = vertices;
+
+    _numVertices = vertices.size();
+}
+
+Line::~Line() {
+    _vao.destroy();
+    _ebo.destroy();
+    _vbo.destroy();
+}
+
+
+void Line::draw(QOpenGLShaderProgram *shader) {
+    //set model matrix uniform:
+    int location = shader->uniformLocation("M");
+    //if (location == -1) qDebug() << "<Shape::draw> Could not find uniform named \"M\".";
+    _gl->glUniformMatrix4fv(location, 1, GL_FALSE, _M.data());
+
+    //set color uniform:
+    location = shader->uniformLocation("color");
+    _gl->glUniform3f(location, _color.x(), _color.y(), _color.z());
+
+    //enable attribute arrays:
+    shader->enableAttributeArray(0);
+    shader->enableAttributeArray(1);
+    shader->enableAttributeArray(2);
+
+    _vao.bind();
+
+    _gl->glDrawArrays(GL_LINES, 0, _numVertices);
+    _vao.release();
+}
+
+
+void Line::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices) {
+
+    vertices.resize(2);
+    vertices[0].pos = _start;
+    vertices[1].pos = _start + _kMax * _dir;
+}
+
+/* ---------------------------------------------------------------------------------------------------- */

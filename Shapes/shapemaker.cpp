@@ -37,19 +37,19 @@ Shape* ShapeMaker::get(ShapeType type) {
 
     case ShapeType::rectangle:
         if (!_rectangle) {
-            _rectangle = new Rectangle{ _shader, QVector2D{ 1.f, 1.f }, QColor{ 200, 0, 100 } };
+            _rectangle = new Rectangle{ _shader, QVector2D{ 1.f, 1.f }, QColor{ 250, 0, 100 } };
         }
         return _rectangle;
         break;
     case ShapeType::triangle:
         if (!_triangle) {
-            _triangle = new TriangleEqualSided{ _shader, QVector2D{ 1.f, 1.f }, QColor{ 100, 0, 200 } };
+            _triangle = new TriangleEqualSided{ _shader, QVector2D{ 1.f, 1.f }, QColor{ 100, 0, 250 } };
         }
         return _triangle;
         break;
     case ShapeType::circle:
         if (!_circle) {
-            _circle = new Circle{ _shader, 1.f, 8, QColor{ 20, 200, 100 } };
+            _circle = new Circle{ _shader, 1.f, 8, QColor{ 20, 250, 100 } };
         }
         return _circle;
         break;

@@ -56,8 +56,7 @@ public:
 
 private:
     void initVertices(std::vector<Vertex>& vertices,
-                      std::vector<int>& indices,
-                      const QColor& color) override;
+                      std::vector<int>& indices) override;
 
     const AABB& _aabb;
 };
