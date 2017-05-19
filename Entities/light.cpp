@@ -1,7 +1,7 @@
 #include "light.h"
 
 Light::Light(const std::string& texturePath, const QVector3D& pos, float radius)
-    :   GameEntity  { ShapeMaker::instance()->get(ShapeType::circle) },
+    :   GameEntity  { ShapeMaker::instance()->get(ShapeType::circle), EntType::light },
         _gl         { nullptr },
         _tex        { nullptr },
         _r          { radius }

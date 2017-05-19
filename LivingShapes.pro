@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     Entities/aabb.cpp \
     Shapes/shapemaker.cpp \
     Entities/light.cpp \
-    Grafics/GaussBlur.cpp
+    Grafics/GaussBlur.cpp \
+    Scene.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -47,7 +48,8 @@ HEADERS  += mainwindow.h \
     Entities/aabb.h \
     Shapes/shapemaker.h \
     Entities/light.h \
-    Grafics/GaussBlur.hpp
+    Grafics/GaussBlur.hpp \
+    Scene.h
 
 FORMS    += mainwindow.ui
 

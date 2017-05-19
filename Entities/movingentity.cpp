@@ -2,7 +2,7 @@
 #include "Shapes/shape.h"
 
 MovingEntity::MovingEntity(Shape *shape, float mass, const QVector3D& initialVelocity)
-    : GameEntity{ shape },
+    : GameEntity{ shape, EntType::moving },
       _mass     { mass },
       _v        { initialVelocity }
 

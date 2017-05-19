@@ -112,7 +112,8 @@ void GLWidget::initializeGL()
     //generate several lights
 
     ShapeMaker::instance()->setShader(_sceneShader);
-    _lights.push_back(new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 4.f });
+    _scene.add(new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 4.f });
+
     /*
     for (size_t i = 0; i < 5; i++) {
         QVector3D pos =QVector3D{ -5.f + 2.f*float(i), 0.f, 0.f };
@@ -120,7 +121,10 @@ void GLWidget::initializeGL()
     }*/
 
     //generate some pseudo-randomized game entities:*/
+    int counter { 0 };
     for (size_t i = 0; i < 20; i++) {
+        std::string name = std::to_string(counter);
+
         int type = rand() % 3;
         float dx = float(rand() % 13 - 6) / 2.f;
         float dy = float(rand() % 11 - 4) / 2.f;
@@ -129,21 +133,25 @@ void GLWidget::initializeGL()
 
         switch(type) {
         case 0:
-            _entities.push_back(
-                new GameEntity{ ShapeMaker::instance()->get(ShapeType::rectangle) });
+            _scene.add(
+                new GameEntity{ ShapeMaker::instance()->get(ShapeType::rectangle) },
+                name);
             break;
         case 1:
-            _entities.push_back(
-                new GameEntity{ ShapeMaker::instance()->get(ShapeType::triangle) });
+            _scene.add(
+                new GameEntity{ ShapeMaker::instance()->get(ShapeType::triangle) },
+                name);
             break;
         case 2:
-            _entities.push_back(
-                new GameEntity{ ShapeMaker::instance()->get(ShapeType::circle) });
+            _scene.add(
+                new GameEntity{ ShapeMaker::instance()->get(ShapeType::circle) },
+                name);
             break;
         }
-        _entities.back()->transform()->setPos(QVector3D{ dx, -dy, 0.0 });
-        _entities.back()->transform()->scale(QVector3D(w, h, 1.f));
+        _scene[name]->transform()->setPos(QVector3D{ dx, -dy, 0.0 });
+        _scene[name]->transform()->scale(QVector3D(w, h, 1.f));
 
+        counter++;
     }
 
     /* END OF TEST CODE --------------------------------------------------------------------- */
@@ -151,19 +159,11 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
-     /* TEST CODE ----------------------------------------------------------------------------- */
-    //update our gameEntities (THIS SHOULD HAPPEN IN A LOOP SEPERATED FROM DRAWING)
-    int flipDir = 1;
-    for (size_t i = 0; i <_entities.size(); i++) {
-        _entities[i]->update((i+1) * flipDir);
-        flipDir *= -1;
-    }
-    for (auto& L : _lights) {
-        L->update(16);
-    }
-    /* END OF TEST CODE --------------------------------------------------------------------- */
+    static int counter{ 0 };
+    std::string name = "Light" + std::to_string(counter++);
 
     _cam.update();
+    _scene.update(1);
 
     //DRAW THE SCENE IN 3 STEPS:
     drawLights();
@@ -172,9 +172,9 @@ void GLWidget::paintGL()
 
     //add new lights <entities>:
     for (auto& pos : _newEntPos) {
-        _lights.push_back(
-            new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 4.f });
-        _lights.back()->transform()->setPos(pos);
+        _scene.add(
+            new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 4.f }, name);
+        _scene[name]->transform()->setPos(pos);
     }
     _newEntPos.clear();
 }
@@ -231,7 +231,7 @@ void GLWidget::drawLights() {
 
     setCameraUniforms(_lightShader);
 
-    for (auto& L : _lights) L->draw(_lightShader);
+    _scene.drawLights(_lightShader);
 
     _lightShader->release();
     _fbLight->release();
@@ -259,7 +259,7 @@ void GLWidget::drawScene() {
 
 
     //draw our gameEntities:
-    for (auto& E : _entities) E->draw(_sceneShader);
+    _scene.drawShapes(_sceneShader);
 
     _sceneShader->release();
     _fbScene->release();
