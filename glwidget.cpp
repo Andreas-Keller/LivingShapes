@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QWheelEvent>
 
+//test
+#include "utils/randomizer.h"
 
 GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
     :   QOpenGLWidget{ parent },
@@ -112,7 +114,7 @@ void GLWidget::initializeGL()
     //generate several lights
 
     ShapeMaker::instance()->setShader(_sceneShader);
-    _scene.add(new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 4.f });
+    _scene.add(new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 8.f });
 
     /*
     for (size_t i = 0; i < 5; i++) {
@@ -125,11 +127,11 @@ void GLWidget::initializeGL()
     for (size_t i = 0; i < 20; i++) {
         std::string name = std::to_string(counter);
 
-        int type = rand() % 3;
-        float dx = float(rand() % 13 - 6) / 2.f;
-        float dy = float(rand() % 11 - 4) / 2.f;
-        float w = float(rand() % 4 + 1) / 5.f;
-        float h = float(rand() % 4 + 1) / 5.f;
+        int type = utils::randInt(0, 2);
+        float dx = utils::randFloat(0.f, 12.f) - 6.f;
+        float dy = utils::randFloat(0.f, 12.f) - 6.f;
+        float w = utils::randFloat(0.5f, 2.f);
+        float h = utils::randFloat(0.5f, 2.f);
 
         switch(type) {
         case 0:

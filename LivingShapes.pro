@@ -35,7 +35,9 @@ SOURCES += main.cpp\
     Shapes/shapemaker.cpp \
     Entities/light.cpp \
     Grafics/GaussBlur.cpp \
-    Scene.cpp
+    Scene.cpp \
+    Steering/Steering.cpp \
+    Steering/wander.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -49,7 +51,10 @@ HEADERS  += mainwindow.h \
     Shapes/shapemaker.h \
     Entities/light.h \
     Grafics/GaussBlur.hpp \
-    Scene.h
+    Scene.h \
+    Steering/Steering.h \
+    Steering/wander.h \
+    utils/randomizer.h
 
 FORMS    += mainwindow.ui
 

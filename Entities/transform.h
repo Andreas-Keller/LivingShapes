@@ -12,30 +12,49 @@
 #include <QMatrix4x4>
 #include <QQuaternion>
 
+//Math helper function: get the translation part from a matrix:
+inline QVector2D getTranslation(const QMatrix4x4& M) {
+    return QVector2D{ M.column(3) };
+}
+
+//Put a translation into a matrix:
+inline void putTranslation(QMatrix4x4& M, const QVector3D& value) {
+    M.setColumn(3, QVector4D{ value.x(), value.y(), value.z(), 1.f });
+}
+
+//Math helper: Get the perpendicular vector (ONLY FOR 2D !!)
+inline QVector3D getNormal(const QVector3D& vector) {
+    return QVector3D{ -vector.y(), vector.x(), vector.z() };
+}
+
 class Transform {
 public:
-    Transform() : _scale{ QVector3D(1.f, 1.f, 1.f) } {}
+    Transform() : _scale{ QVector3D(1.f, 1.f, 1.f) }, _isMvalid { false } 
+	{ _M.setToIdentity();  }
     ~Transform() {}
 
     /* setters: */
-    void setPos (const QVector3D& pos)   { _pos = pos; }
-    void move   (const QVector3D& val)   { _pos += val; }
+    void setPos (const QVector3D& pos)   { _pos = pos; putTranslation(_M, _pos);}
+    void move   (const QVector3D& val)   { _pos += val; putTranslation(_M, _pos); }
 
-    void scale  (float val)              { _scale = QVector3D{ val, val, val }; }
-    void scale  (const QVector3D& val)   { _scale = val; }
+    void scale  (float val)              { _scale = QVector3D{ val, val, val }; _isMvalid = false; }
+    void scale  (const QVector3D& val)   { _scale = val; _isMvalid = false; }
 
     void setRotation(float angle, const QVector3D& axis) {
         _rot = QQuaternion::fromAxisAndAngle(axis, angle);
+        _isMvalid = false;
     }
     void addRotation(float angle, const QVector3D& axis) {
         QQuaternion q = QQuaternion::fromAxisAndAngle(axis, angle);
         _rot = _rot * q;
         _rot.normalize();
+        _isMvalid = false;
     }
 
     //convenience functions because we work in 2D and therefore will always rotate around the Z-Axis:
     void setRotationZ(float angle) {
         setRotation(angle, QVector3D{ 0.f, 0.f, 1.f });
+        _isMvalid = false;
     }
     float rotationZ() {
         float pitch = 0.f; float yaw = 0.f; float roll = 0.f;
@@ -56,12 +75,13 @@ public:
 
     /*  this is the matrix we need to give our shapes before rendering them. */
     QMatrix4x4 matrix() {
-        QMatrix4x4 M;
-        M.setToIdentity();
-        M.translate(_pos);
-        M.rotate(_rot);
-        M.scale(_scale);
-        return M;
+		if (_isMvalid) return _M;
+        _M.setToIdentity();
+        _M.translate(_pos);
+        _M.rotate(_rot);
+        _M.scale(_scale);
+        _isMvalid = true;
+        return _M;
     }
 
 
@@ -70,16 +90,8 @@ private:
     QVector3D       _scale;
     QQuaternion     _rot;
 
+	QMatrix4x4 		_M;
+	bool 			_isMvalid;
 };
-
-//Math helper function: get the translation part from a matrix:
-inline QVector2D getTranslation(const QMatrix4x4& M) {
-    return QVector2D{ M.column(3) };
-}
-
-//Math helper: Get the perpendicular vector (ONLY FOR 2D !!)
-inline QVector3D getNormal(const QVector3D& vector) {
-    return QVector3D{ -vector.y(), vector.x(), vector.z() };
-}
 
 #endif // TRANSFORM_H
