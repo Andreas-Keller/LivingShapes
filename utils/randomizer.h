@@ -7,26 +7,27 @@
 
 #include <random>
 
-namespace utils {
+class Randomizer {
+public:
 
-std::random_device r;		//seeder for the engine
-std::mt19937_64 e(r()) ;	//mersenne-twister engine
-
-
-inline int randInt(int min, int max) {
+static inline int randInt(int min, int max) {
 	std::uniform_int_distribution<int> dist(min, max);
 	return dist(e);
 }
 
-inline float randFloat(float min, float max) {
+static inline float randFloat(float min, float max) {
 	std::uniform_real_distribution<float> dist(min, max);
 	return dist(e);
 }
 
-inline float randBool() {
+static inline float randBool() {
 	std::uniform_int_distribution<int> dist(0, 1);
 	if (dist(e)) return true;
 	return false;
 }
 
-}
+private:
+    static std::random_device r;	//seeder for the engine
+    static std::mt19937_64 e;       //mersenne-twister engine
+
+};

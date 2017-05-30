@@ -4,26 +4,28 @@
 
 #pragma once
 
-#include <QVector2D>
+#include <QVector3D>
 
-#include "Entities/movingentity.h"
 #include "Scene.h"
+#include "wander.h"
 
+class MovingEntity;
 
 class Steering {
 public:
-	Steering(Scene* scene);
+    Steering(MovingEntity* owner, Scene* scene);
 	~Steering();
 
-    QVector2D update();
+    QVector3D update();
 
     //Switches for every steering behaviour we have:
     void    wanderOn()  { _wanderOn = true; }
     void    wanderOff() { _wanderOn = false; }
 
 private:
+    Wander _wander;
     bool   _wanderOn;
 
-
-	Scene* _scene;
+    MovingEntity*   _owner;
+    Scene*          _scene;
 };

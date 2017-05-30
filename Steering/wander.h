@@ -1,19 +1,19 @@
 #ifndef WANDER_H
 #define WANDER_H
 
-#include <QVector2D>
+#include <QVector3D>
 
-#include "Entities/movingentity.h"
+//forward declaration:
+class MovingEntity;
 
 class Wander {
 public:
-    Wander	(MovingEntity* owner, 
-			float distance = 2.f, 
-			float radius = 1.f, 
-			float jitter = 0.2f);
+    Wander  (float distance = 4.f,
+            float radius = 0.5f,
+            float jitter = 0.5f);
     ~Wander();
 
-    QVector2D update();
+    QVector3D update(MovingEntity* owner);
 
 	//setters:
 	void setDistance(float distance)	{ _distance = distance; }
@@ -25,9 +25,7 @@ private:
 	float 	_radius;
 	float 	_jitter;
 	
-	QVector2D 		_target;
-
-	MovingEntity* 	_owner;
+    QVector3D 		_target;
 };
 
 #endif // WANDER_H

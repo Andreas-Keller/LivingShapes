@@ -8,6 +8,8 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
+#include <math.h>
+
 #include <QVector3D>
 #include <QMatrix4x4>
 #include <QQuaternion>
@@ -25,6 +27,16 @@ inline void putTranslation(QMatrix4x4& M, const QVector3D& value) {
 //Math helper: Get the perpendicular vector (ONLY FOR 2D !!)
 inline QVector3D getNormal(const QVector3D& vector) {
     return QVector3D{ -vector.y(), vector.x(), vector.z() };
+}
+
+//Get degrees from radians:
+inline float toDeg(float angle) {
+    return 180.f * angle / M_PI;
+}
+
+//Get radians from degrees:
+inline float toRad(float angle) {
+    return angle * M_PI / 180.f;
 }
 
 class Transform {
@@ -49,6 +61,26 @@ public:
         _rot = _rot * q;
         _rot.normalize();
         _isMvalid = false;
+    }
+
+    //rotate to look at a given target (2D only):
+    void lookAt(const QVector2D& target) {
+
+        //find out in which quadrant we are:
+        int quadrant = 0;
+        if (target.x() >= 0 && target.y() >= 0) quadrant = 1;
+        else if (target.x() >= 0 && target.y() < 0) quadrant = 4;
+        else if (target.x() < 0 && target.y() >= 0) quadrant = 2;
+        else if (target.x() < 0 && target.y() < 0) quadrant = 3;
+
+        //get the atangens of our target:
+        float angle = toDeg(atan(target.y() / target.x()));
+
+        //since atangens only delivers results for quadrants 1 and 4, we may need to adjust:
+        if (quadrant == 2) angle = 180.f - angle;
+        else if (quadrant == 3) angle = 180.f + angle;
+
+        setRotationZ(angle);
     }
 
     //convenience functions because we work in 2D and therefore will always rotate around the Z-Axis:

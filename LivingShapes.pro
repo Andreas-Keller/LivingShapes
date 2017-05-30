@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     Grafics/GaussBlur.cpp \
     Scene.cpp \
     Steering/Steering.cpp \
-    Steering/wander.cpp
+    Steering/wander.cpp \
+    utils/randomizer.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \

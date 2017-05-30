@@ -1,12 +1,13 @@
 #include "wander.h"
 
-Wander::Wander(MovingEntity* owner, float distance, float radius, float jitter) 
+#include "Entities/movingentity.h"
+#include "utils/randomizer.h"
+
+Wander::Wander(float distance, float radius, float jitter)
 	: 	_distance	{ distance },
 		_radius		{ radius },
-		_jitter 	{ jitter },
-		_owner 		{ owner }
+        _jitter 	{ jitter }
 {
-	Q_ASSERT(_owner);
     _target.setX(_distance + _radius);
 }
 
@@ -14,10 +15,10 @@ Wander::Wander(MovingEntity* owner, float distance, float radius, float jitter)
 Wander::~Wander() {}
 
 
-QVector2D Wander::update() {
+QVector3D Wander::update(MovingEntity* owner) {
 	
 	//add a random displacment to the target:
-
+    _target += QVector2D{ Randomizer::randFloat(0, 1) * _jitter, Randomizer::randFloat(0, 1) * _jitter };
 	
 	//reproject the target onto the wander circle:
 	_target.normalize();
@@ -27,6 +28,6 @@ QVector2D Wander::update() {
     QVector3D localPos = QVector3D(_target.x() + _distance, _target.y(), 0.0f);
 
 	//transform target into world space:
-    QVector3D worldPos = _owner->transform()->matrix().inverted() * localPos;
-    QVector3D direction = worldPos - _owner->transform()->pos();
+    QVector3D worldPos = owner->transform()->matrix().inverted() * localPos;
+    return worldPos - owner->transform()->pos();
 }

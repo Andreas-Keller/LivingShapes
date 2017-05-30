@@ -97,8 +97,8 @@ void GLWidget::initializeGL()
 
     //initialize the framebuffer with a const size:
     _fbLight = new QOpenGLFramebufferObject{
-            this->width() * _lightmapScale,
-            this->height()* _lightmapScale};
+            int(this->width() * _lightmapScale),
+            int(this->height()* _lightmapScale) };
     _fbScene = new QOpenGLFramebufferObject{ this->width(), this->height() };
 
     Q_ASSERT(_fbLight->isValid());
@@ -108,7 +108,7 @@ void GLWidget::initializeGL()
     _screenQuad = new Rectangle{ _shader, QVector2D{ 2.f, 2.f} };
 
     //init gauss:
-    _gauss = new GaussBlur{ width() * _lightmapScale, height() * _lightmapScale };
+    _gauss = new GaussBlur{ int(width() * _lightmapScale), int(height() * _lightmapScale) };
 
     /* TEST CODE ----------------------------------------------------------------------------- */
     //generate several lights
@@ -127,11 +127,11 @@ void GLWidget::initializeGL()
     for (size_t i = 0; i < 20; i++) {
         std::string name = std::to_string(counter);
 
-        int type = utils::randInt(0, 2);
-        float dx = utils::randFloat(0.f, 12.f) - 6.f;
-        float dy = utils::randFloat(0.f, 12.f) - 6.f;
-        float w = utils::randFloat(0.5f, 2.f);
-        float h = utils::randFloat(0.5f, 2.f);
+        int type = Randomizer::randInt(0, 2);
+        float dx = Randomizer::randFloat(0.f, 12.f) - 6.f;
+        float dy = Randomizer::randFloat(0.f, 12.f) - 6.f;
+        float w = Randomizer::randFloat(0.5f, 2.f);
+        float h = Randomizer::randFloat(0.5f, 2.f);
 
         switch(type) {
         case 0:
@@ -140,8 +140,9 @@ void GLWidget::initializeGL()
                 name);
             break;
         case 1:
+            //for the rectangle, we crate a moving entity to test the wander behaviour:
             _scene.add(
-                new GameEntity{ ShapeMaker::instance()->get(ShapeType::triangle) },
+                new MovingEntity{ &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 100.f },
                 name);
             break;
         case 2:

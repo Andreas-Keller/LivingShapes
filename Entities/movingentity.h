@@ -3,9 +3,18 @@
 
 #include "gameentity.h"
 
+#include "Steering/Steering.h"
+
+class Scene;
+
 class MovingEntity : public GameEntity {
 public:
-    MovingEntity(Shape* shape, float mass, const QVector3D& initialVelocity = QVector3D());
+    MovingEntity(
+            Scene* scene,
+            Shape* shape,
+            float mass,
+            const QVector3D& initialVelocity = QVector3D());
+
     virtual ~MovingEntity();
 
     virtual void update(int deltaTime) override;
@@ -20,7 +29,7 @@ protected:
     QVector3D _v;   //velocity
     QVector3D _a;   //acceleration
 
-
+    Steering  _steering;
 };
 
 #endif // MOVINGENTITY_H
