@@ -23,7 +23,9 @@ GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
         _sceneShader{ nullptr },
         _gauss      { nullptr },
         _lightmapScale { 0.5f }
-{}
+{
+
+}
 
 
 void GLWidget::mousePressEvent(QMouseEvent *event) {
@@ -81,6 +83,8 @@ void GLWidget::wheelEvent(QWheelEvent *event) {
 
 void GLWidget::initializeGL()
 {
+    initDebugWin();
+
     if (!_gl) {
         _gl = QOpenGLContext::currentContext()->functions();
     }
@@ -140,7 +144,7 @@ void GLWidget::initializeGL()
                 name);
             break;
         case 1:
-            //for the rectangle, we crate a moving entity to test the wander behaviour:
+            //for the triangle, we crate a moving entity to test the wander behaviour:
             _scene.add(
                 new MovingEntity{ &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 100.f },
                 name);
@@ -151,8 +155,14 @@ void GLWidget::initializeGL()
                 name);
             break;
         }
+        if (type != 1) {
+            _scene[name]->transform()->scale(QVector3D(w, h, 1.f));
+        }
+        else {
+            _scene[name]->transform()->scale(QVector3D(1, 2, 1.f));
+        }
         _scene[name]->transform()->setPos(QVector3D{ dx, -dy, 0.0 });
-        _scene[name]->transform()->scale(QVector3D(w, h, 1.f));
+
 
         counter++;
     }
@@ -201,6 +211,9 @@ void GLWidget::resizeGL(int width, int height)
     //resize gauss framebuffers:
     delete _gauss;
    _gauss = new GaussBlur{ width * _lightmapScale, height * _lightmapScale };
+
+   //resize debug Window:
+   _debugWin->onResize(width, height);
 }
 
 void GLWidget::initShaders() {
@@ -299,4 +312,14 @@ void GLWidget::drawFinal() {
 void GLWidget::setCameraUniforms(QOpenGLShaderProgram* shader) {
     _gl->glUniformMatrix4fv(shader->uniformLocation("O"), 1, GL_FALSE, _cam.orthoMatrix().data());
     _gl->glUniformMatrix4fv(shader->uniformLocation("V"), 1, GL_FALSE, _cam.viewMatrix().data());
+}
+
+void GLWidget::initDebugWin() {
+    //test: add a second window with debug information (later we can use this
+    //window for user options)
+    _debugWin = new controlWindow{ this };
+    _debugWin->setWindowFlags(Qt::WindowStaysOnTopHint);
+    _debugWin->resize(QSize{ this->width(), this->height() });
+    _debugWin->setWindowTitle("Debug Win");
+    _debugWin->show();
 }

@@ -63,9 +63,8 @@ public:
         _isMvalid = false;
     }
 
-    //rotate to look at a given target (2D only):
+    //rotate to look at a given direction (2D only) (BUGGED!!):
     void lookAt(const QVector2D& target) {
-
         //find out in which quadrant we are:
         int quadrant = 0;
         if (target.x() >= 0 && target.y() >= 0) quadrant = 1;
@@ -77,10 +76,15 @@ public:
         float angle = toDeg(atan(target.y() / target.x()));
 
         //since atangens only delivers results for quadrants 1 and 4, we may need to adjust:
-        if (quadrant == 2) angle = 180.f - angle;
-        else if (quadrant == 3) angle = 180.f + angle;
+        if (quadrant == 2) angle = 180.f + angle;
+        else if (quadrant == 3) angle = angle - 180.f;
 
-        setRotationZ(angle);
+        setRotationZ(angle + 90.f);
+
+        /*
+        QVector3D direction = QVector3D{ target.x(), target.y(), 0.0f };
+        _rot = QQuaternion::fromDirection(direction.normalized(), QVector3D{ 0.f, 0.f, 1.0f });
+        _isMvalid = false; */
     }
 
     //convenience functions because we work in 2D and therefore will always rotate around the Z-Axis:

@@ -16,6 +16,7 @@
 #include "Scene.h"
 #include "Grafics/GaussBlur.hpp"
 #include "camera.h"
+#include "controlwindow.h"
 
 
 class GLWidget : public QOpenGLWidget {
@@ -39,6 +40,9 @@ protected:
     virtual void    paintGL() override;
     virtual void    resizeGL(int width, int height) override;
 
+    //init the debug window:
+    void initDebugWin();
+
 private:
     void initShaders();
     void drawLights();
@@ -59,6 +63,7 @@ private:
 
     Rectangle*                _screenQuad; //a quad filling the screen, needed to draw the framebuffers into
 
+    controlWindow*            _debugWin;
 
     //TESTCODE:
     QOpenGLShaderProgram*    _shader;      //shader for the final on-screen-drawing

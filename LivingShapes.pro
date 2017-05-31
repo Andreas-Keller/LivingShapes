@@ -38,7 +38,8 @@ SOURCES += main.cpp\
     Scene.cpp \
     Steering/Steering.cpp \
     Steering/wander.cpp \
-    utils/randomizer.cpp
+    utils/randomizer.cpp \
+    controlwindow.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -55,9 +56,11 @@ HEADERS  += mainwindow.h \
     Scene.h \
     Steering/Steering.h \
     Steering/wander.h \
-    utils/randomizer.h
+    utils/randomizer.h \
+    controlwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    controlwindow.ui
 
 DISTFILES += \
     Shaders/simple.vert.glsl \
