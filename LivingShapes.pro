@@ -22,6 +22,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+CONFIG += c++14
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -39,7 +40,9 @@ SOURCES += main.cpp\
     Steering/Steering.cpp \
     Steering/wander.cpp \
     utils/randomizer.cpp \
-    controlwindow.cpp
+    controlwindow.cpp \
+    objpicker.cpp \
+    winmsg.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -57,7 +60,9 @@ HEADERS  += mainwindow.h \
     Steering/Steering.h \
     Steering/wander.h \
     utils/randomizer.h \
-    controlwindow.h
+    controlwindow.h \
+    objpicker.h \
+    winmsg.h
 
 FORMS    += mainwindow.ui \
     controlwindow.ui

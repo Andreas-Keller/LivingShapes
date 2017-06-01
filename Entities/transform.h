@@ -14,6 +14,9 @@
 #include <QMatrix4x4>
 #include <QQuaternion>
 
+//purely for debugging:
+#include "winmsg.h"
+
 //Math helper function: get the translation part from a matrix:
 inline QVector2D getTranslation(const QMatrix4x4& M) {
     return QVector2D{ M.column(3) };
@@ -41,7 +44,7 @@ inline float toRad(float angle) {
 
 class Transform {
 public:
-    Transform() : _scale{ QVector3D(1.f, 1.f, 1.f) }, _isMvalid { false } 
+    Transform() : _scale{ QVector3D(1.f, 1.f, 1.f) }, _isMvalid { false }
 	{ _M.setToIdentity();  }
     ~Transform() {}
 
@@ -55,6 +58,9 @@ public:
     void setRotation(float angle, const QVector3D& axis) {
         _rot = QQuaternion::fromAxisAndAngle(axis, angle);
         _isMvalid = false;
+        QVector3D ax;
+        float an;
+        _rot.getAxisAndAngle(&ax, &an);
     }
     void addRotation(float angle, const QVector3D& axis) {
         QQuaternion q = QQuaternion::fromAxisAndAngle(axis, angle);
@@ -64,7 +70,7 @@ public:
     }
 
     //rotate to look at a given direction (2D only) (BUGGED!!):
-    void lookAt(const QVector2D& target) {
+    void lookAt(const QVector2D& target, bool tracker = false) {
         //find out in which quadrant we are:
         int quadrant = 0;
         if (target.x() >= 0 && target.y() >= 0) quadrant = 1;
@@ -73,13 +79,32 @@ public:
         else if (target.x() < 0 && target.y() < 0) quadrant = 3;
 
         //get the atangens of our target:
-        float angle = toDeg(atan(target.y() / target.x()));
+        float angle = toDeg(atan(target.x() / target.y()));
+
+        //debugging:
+        if (tracker) {
+            WinMsg::add("<i>Internal data from Function <Transform::lookAt>:</i>");
+            WinMsg::add("Direction Vector:\t " +
+                        std::to_string(target.x()) + " / " +
+                        std::to_string(target.y()));
+            WinMsg::add("Direction angle:\t" + std::to_string(angle));
+            WinMsg::add("Vectors Quadrant:\t" + std::to_string(quadrant));
+        }
 
         //since atangens only delivers results for quadrants 1 and 4, we may need to adjust:
-        if (quadrant == 2) angle = 180.f + angle;
-        else if (quadrant == 3) angle = angle - 180.f;
+        //if (quadrant == 2) angle = 180.f + angle;
+        if (quadrant == 1) angle *= -1;
+        if (quadrant == 2) angle *= -1;
+        if (quadrant == 3) angle = 180.f - angle;
+        if (quadrant == 4) angle = 180.f - angle;
 
-        setRotationZ(angle + 90.f);
+        if (angle < 0) angle = 360.f + angle;
+
+        if (tracker) {
+            WinMsg::add("Definitive angle: " + std::to_string(angle));
+        }
+
+        setRotationZ(angle);
 
         /*
         QVector3D direction = QVector3D{ target.x(), target.y(), 0.0f };
@@ -111,7 +136,7 @@ public:
 
     /*  this is the matrix we need to give our shapes before rendering them. */
     QMatrix4x4 matrix() {
-		if (_isMvalid) return _M;
+        if (_isMvalid) return _M;
         _M.setToIdentity();
         _M.translate(_pos);
         _M.rotate(_rot);
@@ -127,7 +152,8 @@ private:
     QQuaternion     _rot;
 
 	QMatrix4x4 		_M;
-	bool 			_isMvalid;
+
+    bool            _isMvalid;
 };
 
 #endif // TRANSFORM_H

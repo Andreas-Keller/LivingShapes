@@ -17,7 +17,7 @@ void GameEntity::update(int deltaTime)
 {
     //here we can start applying ai-stuff
     //for now just a test:
-    _transform.setRotationZ(_transform.rotationZ() + float(deltaTime / 10.0));
+    //_transform.setRotationZ(_transform.rotationZ() + float(deltaTime / 10.0));
 
     _aabb.update(_transform.matrix());
     _aabbShape.update();

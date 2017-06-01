@@ -17,6 +17,9 @@ public:
 
     void onResize(int width, int height);
 
+    void addText(const std::string& msg);
+    void addText(const std::vector<std::string>& msg);
+
 private:
     Ui::controlWindow *ui;
 };

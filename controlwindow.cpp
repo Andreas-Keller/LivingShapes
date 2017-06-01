@@ -1,6 +1,7 @@
 #include "controlwindow.h"
 #include "ui_controlwindow.h"
 
+
 controlWindow::controlWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::controlWindow)
@@ -31,4 +32,15 @@ void controlWindow::onResize(int width, int height)
     ui->debugBox->resize(x, y);
     ui->debugBox->append(QString::fromStdString("Debug Box X: " + std::to_string(x)));
     ui->debugBox->append(QString::fromStdString("Debug Box Y: " + std::to_string(y)));
+}
+
+void controlWindow::addText(const std::string &msg) {
+    ui->debugBox->append(QString::fromStdString(msg));
+}
+
+void controlWindow::addText(const std::vector<std::__cxx11::string> &msg)
+{
+    for (auto& S : msg) {
+        addText(S);
+    }
 }

@@ -6,6 +6,7 @@
 
 #include <QDebug>
 #include <QWheelEvent>
+#include <sstream>
 
 //test
 #include "utils/randomizer.h"
@@ -18,6 +19,8 @@ GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
         _fbLight    { nullptr },
         _fbScene    { nullptr },
         _screenQuad { nullptr },
+        _debugWin   { nullptr },
+        _picker     { &_scene, &_cam, this },
         _shader     { nullptr },
         _lightShader{ nullptr },
         _sceneShader{ nullptr },
@@ -27,10 +30,24 @@ GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
 
 }
 
+GLWidget::~GLWidget() {
+    DEL(_gauss)         //DEL macro defined in glwidget.h
+    DEL(_sceneShader)
+    DEL(_lightShader)
+    DEL(_shader)
+    DEL(_debugWin)
+    DEL(_screenQuad)
+    DEL(_fbScene)
+}
+
 
 void GLWidget::mousePressEvent(QMouseEvent *event) {
     _mousePos = event->pos();
     setCursor(QCursor{ Qt::CursorShape::OpenHandCursor });
+
+    //display debug info if we hit a shape with the cursor:
+    auto entity = _picker.pick(_mousePos);
+    if (entity) sendShapeInfo(entity);
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event) {
@@ -81,9 +98,22 @@ void GLWidget::wheelEvent(QWheelEvent *event) {
     else if (degrees.y() < 0) _cam.setZoom(_cam.zoom() - 20.f);
 }
 
+void GLWidget::keyPressEvent(QKeyEvent *event) {
+    //debugging transfrom class...
+    if (event->text() == "w") _scene["tri"]->transform()->addRotation(-10.f, QVector3D{0.f, 0.f, 1.f});
+    if (event->text() == "a") {
+        _scene["tri"]->transform()->move(QVector3D{0.0f, 0.5f, 0.0f});
+        _scene["tri"]->transform()->setRotationZ(182.f);
+    }
+    if (event->text() == "d") _scene["tri"]->transform()->setRotationZ(-45.f);
+    if (event->text() == "s") _scene["tri"]->transform()->setRotationZ(180.f);
+    if (event->text() == "q") _scene["tri"]->transform()->move(QVector3D{ 0.f, 1.f, 0.f});
+}
+
 void GLWidget::initializeGL()
 {
     initDebugWin();
+    setFocusPolicy(Qt::StrongFocus);
 
     if (!_gl) {
         _gl = QOpenGLContext::currentContext()->functions();
@@ -163,9 +193,11 @@ void GLWidget::initializeGL()
         }
         _scene[name]->transform()->setPos(QVector3D{ dx, -dy, 0.0 });
 
-
         counter++;
     }
+    //debug: set a user-controlable triangle:
+    _scene.add(new GameEntity{ ShapeMaker::instance()->get(ShapeType::triangle) }, "tri");
+    _scene["tri"]->transform()->scale(QVector3D{ 2, 4, 1.f });
 
     /* END OF TEST CODE --------------------------------------------------------------------- */
 }
@@ -190,8 +222,10 @@ void GLWidget::paintGL()
         _scene[name]->transform()->setPos(pos);
     }
     _newEntPos.clear();
-}
 
+    //debug: retrieve messages from WinMsg and send them to our debug window:
+    _debugWin->addText(WinMsg::get());
+}
 
 void GLWidget::resizeGL(int width, int height)
 {
@@ -322,4 +356,27 @@ void GLWidget::initDebugWin() {
     _debugWin->resize(QSize{ this->width(), this->height() });
     _debugWin->setWindowTitle("Debug Win");
     _debugWin->show();
+}
+
+void GLWidget::sendShapeInfo(GameEntity* entity) {
+
+    _debugWin->addText("<b>Properties of the object you clicked on:</b>");
+    _debugWin->addText("Type id:\t" + std::to_string((int)entity->type()));
+    _debugWin->addText("Position:\t" +
+                       std::to_string(entity->transform()->pos().x()) + " / " +
+                       std::to_string(entity->transform()->pos().y()) + " / " +
+                       std::to_string(entity->transform()->pos().z()));
+    _debugWin->addText("Angle:\t" + std::to_string(entity->transform()->rotationZ()));
+
+    //for moving Entities, we give more infos:
+    if (entity->type() == EntType::moving) {
+        auto movingEnt = static_cast<MovingEntity*>(entity);
+        _debugWin->addText("Velocity:\t" +
+                        std::to_string(movingEnt->velocity().x()) + " / " +
+                        std::to_string(movingEnt->velocity().y()) + " / " +
+                        std::to_string(movingEnt->velocity().y()));
+
+        //track the object for one frame:
+        movingEnt->track();
+    }
 }

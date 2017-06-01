@@ -6,7 +6,8 @@ MovingEntity::MovingEntity(Scene* scene, Shape *shape, float mass, const QVector
     : GameEntity{ shape, EntType::moving },
       _mass     { mass },
       _v        { initialVelocity },
-      _steering { this, scene }
+      _steering { this, scene },
+      _tracker  { false }
 {
     Q_ASSERT(scene);
     _steering.wanderOn();
@@ -23,12 +24,12 @@ void MovingEntity::update(int deltaTime) {
     _a = force / _mass;
 
     //basic Newton:
-    _v += _a*deltaTime / 100.f;
+    _v += _a*deltaTime / 1000.f;
     _transform.move(_v*deltaTime / 1000.f);
 
     //align objects orientation with its velocity(this is the easy way...):
-    if (_v.lengthSquared() > 0.001){
-        _transform.lookAt(QVector2D{ _v.x(), _v.y() });
+    if (_v.lengthSquared() > 0.01){
+        _transform.lookAt(QVector2D{ _v.x(), _v.y() }, _tracker);
     }
 
     //give the world-matrix to the shape:
@@ -37,4 +38,6 @@ void MovingEntity::update(int deltaTime) {
     //update the aabb:
     _aabb.update(_transform.matrix());
     _aabbShape.update();
+
+    _tracker = false;
 }

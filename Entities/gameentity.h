@@ -28,6 +28,7 @@ public:
     //getters and setters:
     Shape* shape()                      { return _shape; }
     Transform* transform()              { return &_transform; }
+    AABB* aabb()                        { return &_aabb; }
 
     EntType type() const                { return _type; }
 

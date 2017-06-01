@@ -24,12 +24,18 @@ public:
     QVector3D acceleration(){ return _a; }
     float mass()            { return _mass; }
 
+    //debugging. Tracker will be switched off automaticly after one frame
+    void track()                        { _tracker = true; }
+
 protected:
     float _mass;
     QVector3D _v;   //velocity
     QVector3D _a;   //acceleration
 
     Steering  _steering;
+
+    //for debugging:
+    bool      _tracker;
 };
 
 #endif // MOVINGENTITY_H

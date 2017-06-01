@@ -17,19 +17,24 @@
 #include "Grafics/GaussBlur.hpp"
 #include "camera.h"
 #include "controlwindow.h"
+#include "objpicker.h"
 
+//convenience macro used in the destructor:
+#define DEL(x) { if(x) { delete x; x = nullptr; }; }
 
 class GLWidget : public QOpenGLWidget {
 
 public:
     /*  @param parent: The parent window in which the canvas is drawn */
     GLWidget(QWidget* parent, QColor clearColor = QColor(0, 0, 0));
+    ~GLWidget();
 
     /* Handle mouse events: */
     virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent *event) override;
     virtual void wheelEvent(QWheelEvent *event) override;
+    virtual void keyPressEvent(QKeyEvent *event) override;
 
     //getters for the ui:
     Camera& camera() { return _cam; }
@@ -42,6 +47,9 @@ protected:
 
     //init the debug window:
     void initDebugWin();
+
+    //sends shapes data to the debug win if we picked an object:
+    void sendShapeInfo(GameEntity *entity);
 
 private:
     void initShaders();
@@ -63,7 +71,11 @@ private:
 
     Rectangle*                _screenQuad; //a quad filling the screen, needed to draw the framebuffers into
 
+    //window for debugging (and later maybe for user-options)
     controlWindow*            _debugWin;
+
+    //For object picking with the mouse:
+    ObjPicker                 _picker;
 
     //TESTCODE:
     QOpenGLShaderProgram*    _shader;      //shader for the final on-screen-drawing

@@ -45,6 +45,10 @@ public:
 		return get(name);
 	}
 
+    //get iterators for shape vector:
+    auto shapesBegin()      { return _shapes.begin(); }
+    auto shapesEnd()        { return _shapes.end(); }
+
 private:
 	void addToList(GameEntity* ent);
 	void removeFromList(GameEntity* ent);

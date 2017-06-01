@@ -28,6 +28,9 @@ public:
     static bool intersection(
             const AABB& box1, const AABB& box2, AABB* intersectionBox = nullptr);
 
+    /* Tests if a given point is inside the aabb and returns true if so: */
+    bool isInside(const QVector3D& point);
+
     bool      isEmpty() const { return (_min.x() > _max.x() || _min.y() > _max.y()); }
     QVector2D min() const   { return _min; }
     QVector2D max() const   { return _max; }

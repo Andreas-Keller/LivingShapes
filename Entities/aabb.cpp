@@ -113,6 +113,10 @@ bool AABB::intersection(const AABB &box1, const AABB &box2, AABB *intersectionBo
     return true;
 }
 
+bool AABB::isInside(const QVector3D& point) {
+	return (point.x() > _min.x() && point.x() < _max.x() &&
+			point.y() > _min.y() && point.y() < _max.y());
+}
 
 /* Purely for debugging: */
 AABBShape::AABBShape(QOpenGLShaderProgram *shader, const AABB &aabb)
