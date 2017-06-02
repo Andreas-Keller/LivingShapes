@@ -98,7 +98,8 @@ public:
         if (quadrant == 3) angle = 180.f - angle;
         if (quadrant == 4) angle = 180.f - angle;
 
-        if (angle < 0) angle = 360.f + angle;
+        if (angle < -180) angle += 360;
+        if (angle > 180) angle -= 360;
 
         if (tracker) {
             WinMsg::add("Definitive angle: " + std::to_string(angle));

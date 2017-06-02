@@ -19,10 +19,16 @@ public:
 
     virtual void update(int deltaTime) override;
 
+    //setters:
+    void setVelocity(const QVector3D& val) { _v = val; }
+    void setAcceleration(const QVector3D& val) { _a = val; }
+
     //getters:
     QVector3D velocity()    { return _v; }
     QVector3D acceleration(){ return _a; }
     float mass()            { return _mass; }
+
+    Steering* steering()    { return &_steering; }
 
     //debugging. Tracker will be switched off automaticly after one frame
     void track()                        { _tracker = true; }

@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     utils/randomizer.cpp \
     controlwindow.cpp \
     objpicker.cpp \
-    winmsg.cpp
+    winmsg.cpp \
+    Grafics/renderer.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -62,7 +63,8 @@ HEADERS  += mainwindow.h \
     utils/randomizer.h \
     controlwindow.h \
     objpicker.h \
-    winmsg.h
+    winmsg.h \
+    Grafics/renderer.h
 
 FORMS    += mainwindow.ui \
     controlwindow.ui

@@ -19,16 +19,17 @@ MovingEntity::~MovingEntity()
 }
 
 void MovingEntity::update(int deltaTime) {
-    //Calculate steering force
     QVector3D force = _steering.update();
-    _a = force / _mass;
+
+    if (force.lengthSquared() > 0.01f)
+        _a = force / _mass;
 
     //basic Newton:
     _v += _a*deltaTime / 1000.f;
     _transform.move(_v*deltaTime / 1000.f);
 
     //align objects orientation with its velocity(this is the easy way...):
-    if (_v.lengthSquared() > 0.01){
+    if (_v.lengthSquared() > 0.001){
         _transform.lookAt(QVector2D{ _v.x(), _v.y() }, _tracker);
     }
 

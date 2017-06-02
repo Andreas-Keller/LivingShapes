@@ -11,33 +11,15 @@
 //test
 #include "utils/randomizer.h"
 
-GLWidget::GLWidget(QWidget* parent, QColor clearColor /* = QColor::black */)
+GLWidget::GLWidget(QWidget* parent)
     :   QOpenGLWidget{ parent },
-        _gl         { nullptr },
-        _color      { clearColor },
         _cam        { this->width(), this->height() },
-        _fbLight    { nullptr },
-        _fbScene    { nullptr },
-        _screenQuad { nullptr },
         _debugWin   { nullptr },
-        _picker     { &_scene, &_cam, this },
-        _shader     { nullptr },
-        _lightShader{ nullptr },
-        _sceneShader{ nullptr },
-        _gauss      { nullptr },
-        _lightmapScale { 0.5f }
-{
-
-}
+        _picker     { &_scene, &_cam, this }
+{}
 
 GLWidget::~GLWidget() {
-    DEL(_gauss)         //DEL macro defined in glwidget.h
-    DEL(_sceneShader)
-    DEL(_lightShader)
-    DEL(_shader)
     DEL(_debugWin)
-    DEL(_screenQuad)
-    DEL(_fbScene)
 }
 
 
@@ -99,55 +81,40 @@ void GLWidget::wheelEvent(QWheelEvent *event) {
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *event) {
+
     //debugging transfrom class...
-    if (event->text() == "w") _scene["tri"]->transform()->addRotation(-10.f, QVector3D{0.f, 0.f, 1.f});
-    if (event->text() == "a") {
-        _scene["tri"]->transform()->move(QVector3D{0.0f, 0.5f, 0.0f});
-        _scene["tri"]->transform()->setRotationZ(182.f);
+    MovingEntity* obj = static_cast<MovingEntity*>(_scene["tri"]);
+
+    if (event->text() == "w")
+        obj->setAcceleration(QVector3D{ 0.f, 0.4f, 0.f});
+    if (event->text() == "s")
+        obj->setAcceleration(QVector3D{ 0.f, -0.4f, 0.f});
+    if (event->text() == "a")
+        obj->setAcceleration(QVector3D{ -0.4f, 0.f, 0.f});
+    if (event->text() == "d")
+        obj->setAcceleration(QVector3D{ 0.4f, 0.f, 0.f});
+    if (event->text() == " ") {
+        obj->setVelocity(QVector3D{ 0.f, 0.f, 0.f });
+        obj->setAcceleration(QVector3D{0.f, 0.f, 0.f});
     }
-    if (event->text() == "d") _scene["tri"]->transform()->setRotationZ(-45.f);
-    if (event->text() == "s") _scene["tri"]->transform()->setRotationZ(180.f);
-    if (event->text() == "q") _scene["tri"]->transform()->move(QVector3D{ 0.f, 1.f, 0.f});
 }
 
 void GLWidget::initializeGL()
 {
+	//initialize debug window:
     initDebugWin();
+
+	//let window get input if its has mouse focus
     setFocusPolicy(Qt::StrongFocus);
 
-    if (!_gl) {
-        _gl = QOpenGLContext::currentContext()->functions();
-    }
-    _gl->glClearColor(_color.redF(), _color.greenF(), _color.blueF(), _color.alphaF());
-    _gl->glViewport(0, 0, this->width(), this->height());
-
-    _gl->glEnable(GL_BLEND);
-    _gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    initShaders();
-
-    //Give the shape shader to our ShapeMaker:
-    ShapeMaker::instance()->setShader(_shader);
-
-    //initialize the framebuffer with a const size:
-    _fbLight = new QOpenGLFramebufferObject{
-            int(this->width() * _lightmapScale),
-            int(this->height()* _lightmapScale) };
-    _fbScene = new QOpenGLFramebufferObject{ this->width(), this->height() };
-
-    Q_ASSERT(_fbLight->isValid());
-    Q_ASSERT(_fbScene->isValid());
-
-    //initialize the screen-filling quad:
-    _screenQuad = new Rectangle{ _shader, QVector2D{ 2.f, 2.f} };
-
-    //init gauss:
-    _gauss = new GaussBlur{ int(width() * _lightmapScale), int(height() * _lightmapScale) };
+	//initialize the renderer:
+	_renderer = new Renderer{
+					&_scene, 
+                    this->width(), this->height() };
 
     /* TEST CODE ----------------------------------------------------------------------------- */
     //generate several lights
 
-    ShapeMaker::instance()->setShader(_sceneShader);
     _scene.add(new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 8.f });
 
     /*
@@ -196,8 +163,9 @@ void GLWidget::initializeGL()
         counter++;
     }
     //debug: set a user-controlable triangle:
-    _scene.add(new GameEntity{ ShapeMaker::instance()->get(ShapeType::triangle) }, "tri");
+    _scene.add(new MovingEntity{ &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 100.f }, "tri");
     _scene["tri"]->transform()->scale(QVector3D{ 2, 4, 1.f });
+    static_cast<MovingEntity*>(_scene["tri"])->steering()->wanderOff();
 
     /* END OF TEST CODE --------------------------------------------------------------------- */
 }
@@ -208,19 +176,18 @@ void GLWidget::paintGL()
     std::string name = "Light" + std::to_string(counter++);
 
     _cam.update();
-    _scene.update(1);
+    _scene.update(16);  //because paintGL gets called every 16ms
 
-    //DRAW THE SCENE IN 3 STEPS:
-    drawLights();
-    drawScene();
-    drawFinal();
+    //let the renderer do the drawing:
+    _renderer->draw(_cam);
 
-    //add new lights <entities>:
+    /*add new lights <entities>:
     for (auto& pos : _newEntPos) {
         _scene.add(
-            new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 4.f }, name);
+            new MovingEntity{ &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 100.f }, name);
         _scene[name]->transform()->setPos(pos);
-    }
+        _scene[name]->transform()->scale(QVector3D{ 2, 4, 1.f });
+    }*/
     _newEntPos.clear();
 
     //debug: retrieve messages from WinMsg and send them to our debug window:
@@ -229,123 +196,11 @@ void GLWidget::paintGL()
 
 void GLWidget::resizeGL(int width, int height)
 {
-    _gl->glViewport(0, 0, width, height);
     _cam.resize(width, height);
-
-    //we also need to resize our framebuffers:
-    delete _fbScene;
-    _fbScene = new QOpenGLFramebufferObject{ width, height };
-    delete _fbLight;
-    _fbLight = new QOpenGLFramebufferObject{
-            width * _lightmapScale,
-            height * _lightmapScale };
-    Q_ASSERT(_fbScene->isValid());
-    Q_ASSERT(_fbLight->isValid());
-
-    //resize gauss framebuffers:
-    delete _gauss;
-   _gauss = new GaussBlur{ width * _lightmapScale, height * _lightmapScale };
+	_renderer->resize(width, height);
 
    //resize debug Window:
    _debugWin->onResize(width, height);
-}
-
-void GLWidget::initShaders() {
-    //Create the final shader:
-    _shader = new QOpenGLShaderProgram();
-    _shader->addShaderFromSourceFile(QOpenGLShader::Vertex, "Shaders/final.vert.glsl");
-    _shader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/final.frag.glsl");
-    _shader->link();
-
-    //Create the light shader:
-    _lightShader = new QOpenGLShaderProgram();
-    _lightShader->addShaderFromSourceFile(QOpenGLShader::Vertex, "Shaders/lights.vert.glsl");
-    _lightShader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/lights.frag.glsl");
-    _lightShader->link();
-
-    //Create the scene shader:
-    _sceneShader = new QOpenGLShaderProgram();
-    _sceneShader->addShaderFromSourceFile(QOpenGLShader::Vertex, "Shaders/scene.vert.glsl");
-    _sceneShader->addShaderFromSourceFile(QOpenGLShader::Fragment, "Shaders/scene.frag.glsl");
-    _sceneShader->link();
-}
-
-void GLWidget::drawLights() {
-    _fbLight->bind();
-    _gl->glViewport(0, 0, _fbLight->width(), _fbLight->height());
-    _gl->glEnable(GL_BLEND);
-    _gl->glBlendFunc(GL_ONE, GL_ONE); //additive blending for the lights
-    _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    _lightShader->bind();
-
-    setCameraUniforms(_lightShader);
-
-    _scene.drawLights(_lightShader);
-
-    _lightShader->release();
-    _fbLight->release();
-    _gl->glViewport(0, 0, this->width(), this->height());
-}
-
-void GLWidget::drawScene() {
-    _gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    _fbScene->bind();
-    _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    /*
-    //draw lights again with 1/3 of size so we can see them in empty areas:
-    _lightShader->bind();
-    for (auto& L : _lights) {
-        L->transform()->scale(2.f);
-        L->draw(_lightShader);
-        L->transform()->scale(4.f);
-    }
-    _lightShader->release();*/
-
-    //bind shader and set camera matrices:
-    _sceneShader->bind();
-    setCameraUniforms(_sceneShader);
-
-
-    //draw our gameEntities:
-    _scene.drawShapes(_sceneShader);
-
-    _sceneShader->release();
-    _fbScene->release();
-}
-
-void GLWidget::drawFinal() {
-    _gl->glDisable(GL_BLEND);
-    _gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //test: gauss blur
-    //int text = _gauss->blurDS(_fbScene, 1);
-    //_gl->glBindFramebuffer(GL_FRAMEBUFFER, 0); //why necessary?
-    //_gl->glViewport(0, 0, this->width(), this->height());
-
-    _shader->bind();
-
-    //bind the textures from our two framebuffers:
-    int sceneTex = _shader->uniformLocation("sceneTex");
-    int lightTex = _shader->uniformLocation("lightTex");
-
-    _gl->glActiveTexture(GL_TEXTURE0);
-    _gl->glBindTexture(GL_TEXTURE_2D, _fbScene->texture());
-    _gl->glUniform1i(sceneTex, 0);
-
-    _gl->glActiveTexture(GL_TEXTURE1);
-    _gl->glBindTexture(GL_TEXTURE_2D, _fbLight->texture());
-    _gl->glUniform1i(lightTex, 1);
-
-    _screenQuad->draw(_shader);
-
-    _shader->release();
-}
-
-void GLWidget::setCameraUniforms(QOpenGLShaderProgram* shader) {
-    _gl->glUniformMatrix4fv(shader->uniformLocation("O"), 1, GL_FALSE, _cam.orthoMatrix().data());
-    _gl->glUniformMatrix4fv(shader->uniformLocation("V"), 1, GL_FALSE, _cam.viewMatrix().data());
 }
 
 void GLWidget::initDebugWin() {

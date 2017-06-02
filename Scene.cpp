@@ -16,20 +16,9 @@ Scene::~Scene() {
 
 
 void Scene::update(int timestep) {
-	for (auto& E : _entities) {
-        /* TEST CODE ----------------------------------------------------------------------------- */
-       //update our gameEntities (THIS SHOULD HAPPEN IN A LOOP SEPERATED FROM DRAWING)
-       int flipDir = 1;
-       for (size_t i = 0; i < _shapes.size(); i++) {
-           _shapes[i]->update((timestep) * flipDir);
-           flipDir *= -1;
-       }
-       for (auto& L : _lights) {
-           L->update(timestep);
-       }
-       /* END OF TEST CODE --------------------------------------------------------------------- */
-       //E.second->update(timestep);
-	}
+    for (auto& E : _entities) {
+       E.second->update(timestep);
+    }
 }
 
 
