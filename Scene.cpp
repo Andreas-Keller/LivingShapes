@@ -81,6 +81,21 @@ GameEntity* Scene::get(const std::string& name) {
     return ent->second;
 }
 
+std::vector<GameEntity*> Scene::tagObstacles(GameEntity *center, float radius) {
+
+    std::vector<GameEntity*> tagged;
+    float rSquared = radius * radius;
+
+    for (auto& E : _entities) {
+        if (E.second == center) continue; //do not self-tag
+        QVector3D dir = E.second->transform()->pos() - center->transform()->pos();
+        if (dir.lengthSquared() <= rSquared) {
+            tagged.push_back(E.second);
+        }
+    }
+    return tagged;
+}
+
 
 void Scene::addToList(GameEntity* ent) {
 	switch (ent->type()) {

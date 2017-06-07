@@ -35,6 +35,13 @@ public:
     QVector2D min() const   { return _min; }
     QVector2D max() const   { return _max; }
 
+    //get the "radius" of the aabb:
+    inline float radius() {
+        float width = _max.x() - _min.x();
+        float height = _max.y() - _min.y();
+        return (width > height)? width : height;
+    }
+
 private:
     QVector2D _maxO;    //original max and min
     QVector2D _minO;

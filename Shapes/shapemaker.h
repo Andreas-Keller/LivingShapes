@@ -17,7 +17,8 @@
 enum class ShapeType {
     rectangle,
     triangle,
-    circle
+    circle,
+    arrow
 };
 
 class ShapeMaker {
@@ -37,6 +38,7 @@ private:
     Shape* _rectangle;
     Shape* _triangle;
     Shape* _circle;
+    Shape* _arrow;
 
     QOpenGLShaderProgram* _shader;
 };

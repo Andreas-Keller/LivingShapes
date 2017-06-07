@@ -23,20 +23,25 @@ public:
     void setVelocity(const QVector3D& val) { _v = val; }
     void setAcceleration(const QVector3D& val) { _a = val; }
 
-    //getters:
-    QVector3D velocity()    { return _v; }
-    QVector3D acceleration(){ return _a; }
-    float mass()            { return _mass; }
+    void setMaxForce(float val)            { _maxF = val; }
 
-    Steering* steering()    { return &_steering; }
+    //getters:
+    QVector3D velocity() const      { return _v; }
+    QVector3D acceleration() const  { return _a; }
+    float mass() const              { return _mass; }
+    float maxForce() const          { return _maxF; }
+
+    Steering* steering()            { return &_steering; }
 
     //debugging. Tracker will be switched off automaticly after one frame
     void track()                        { _tracker = true; }
 
 protected:
     float _mass;
-    QVector3D _v;   //velocity
-    QVector3D _a;   //acceleration
+    QVector3D _v;       //velocity
+    QVector3D _a;       //acceleration
+
+    float     _maxF;    //the maximal force this entity can use on itself
 
     Steering  _steering;
 

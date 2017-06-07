@@ -4,6 +4,7 @@ ShapeMaker::ShapeMaker()
     : _rectangle    { nullptr },
       _triangle     { nullptr },
       _circle       { nullptr },
+      _arrow        { nullptr },
       _shader       { nullptr }
 {}
 
@@ -27,6 +28,10 @@ ShapeMaker::~ShapeMaker() {
     if (_circle) {
         delete _circle;
         _circle = nullptr;
+    }
+    if (_arrow) {
+        delete _arrow;
+        _arrow = nullptr;
     }
 }
 
@@ -52,6 +57,12 @@ Shape* ShapeMaker::get(ShapeType type) {
             _circle = new Circle{ _shader, 1.f, 8, QColor{ 20, 250, 100 } };
         }
         return _circle;
+        break;
+    case ShapeType::arrow:
+        if (!_arrow) {
+            _arrow = new Arrow{ _shader, QVector3D{ 0.f, 0.f, 0.f }, QVector3D{ 0.f, 1.f, 0.f } };
+        }
+        return _arrow;
         break;
     default:
         return nullptr;

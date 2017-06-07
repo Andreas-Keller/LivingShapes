@@ -4,7 +4,7 @@
 #include "utils/randomizer.h"
 
 Wander::Wander(float distance, float radius, float jitter)
-	: 	_distance	{ distance },
+    : 	_distance	{ distance },
 		_radius		{ radius },
         _jitter 	{ jitter }
 {

@@ -265,3 +265,42 @@ void Line::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices
 }
 
 /* ---------------------------------------------------------------------------------------------------- */
+
+Arrow::Arrow(QOpenGLShaderProgram *shader, const QVector3D &start, const QVector3D &end, const QColor &color)
+    : Line  { shader, start, end, color }
+{
+    _dir = QVector3D(end - start).normalized();
+    _kMax = QVector3D(end - start).length();
+
+    std::vector<Vertex> vertices;
+    std::vector<int> indices;
+
+    initVertices(vertices, indices);
+    initBuffers(vertices, indices);
+
+    _vertices = vertices;
+
+    _numVertices = vertices.size();
+}
+
+
+Arrow::~Arrow()
+{}
+
+
+void Arrow::initVertices(std::vector<Vertex> &vertices, std::vector<int> &indices) {
+
+    vertices.resize(6);
+
+    //same as line:
+    vertices[0].pos = _start;
+    vertices[1].pos = _start + _kMax * _dir;
+
+    //and now for the arrowhead:
+    vertices[2].pos = vertices[1].pos;
+    vertices[3].pos = vertices[1].pos + QVector3D{ -0.2f, -0.3f, 0.0f };
+    vertices[4].pos = vertices[1].pos;
+    vertices[5].pos = vertices[1].pos + QVector3D{ 0.2f, -0.3f, 0.0f };
+}
+
+/* ---------------------------------------------------------------------------------------------------- */

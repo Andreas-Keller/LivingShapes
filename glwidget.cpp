@@ -3,6 +3,7 @@
 #include "Shapes/shapemaker.h"
 #include "Entities/movingentity.h"
 #include "Shapes/shapemaker.h"
+#include "Grafics/debugrenderer.h"
 
 #include <QDebug>
 #include <QWheelEvent>
@@ -16,7 +17,9 @@ GLWidget::GLWidget(QWidget* parent)
         _cam        { this->width(), this->height() },
         _debugWin   { nullptr },
         _picker     { &_scene, &_cam, this }
-{}
+{
+    setMouseTracking(true);
+}
 
 GLWidget::~GLWidget() {
     DEL(_debugWin)
@@ -68,6 +71,11 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event) {
     }
 
     _mousePos = event->pos();
+
+    //set the light on the mouse position:
+    QVector3D lightPos = _picker.mouseWorldPos(_mousePos);
+    _scene["light"]->transform()->setPos(lightPos);
+
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event) {
@@ -115,15 +123,15 @@ void GLWidget::initializeGL()
     /* TEST CODE ----------------------------------------------------------------------------- */
     //generate several lights
 
-    _scene.add(new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 8.f });
-
+    _scene.add(new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 8.f }, "light");
     /*
     for (size_t i = 0; i < 5; i++) {
         QVector3D pos =QVector3D{ -5.f + 2.f*float(i), 0.f, 0.f };
         _lights.push_back(new Light{ "light2", pos, 2.f });
     }*/
 
-    //generate some pseudo-randomized game entities:*/
+    //generate some pseudo-randomized game entities:
+    /*
     int counter { 0 };
     for (size_t i = 0; i < 20; i++) {
         std::string name = std::to_string(counter);
@@ -161,7 +169,24 @@ void GLWidget::initializeGL()
         _scene[name]->transform()->setPos(QVector3D{ dx, -dy, 0.0 });
 
         counter++;
+    }*/
+
+    //generate moving entities:
+    for (int x = -20; x <= 20; x+=5) {
+        for (int y = -20; y <= 20; y+=5) {
+            std::string name = "Entity_" + std::to_string(x) + "_" + std::to_string(y);
+            _scene.add(
+                new MovingEntity{ &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 100.f },
+                name);
+            _scene[name]->transform()->setPos(QVector3D{ x, y, 0.0f });
+            _scene[name]->transform()->scale(QVector3D(1, 2, 1.f));
+            if ((x + y) % 2)
+            static_cast<MovingEntity*>(_scene[name])->steering()->wanderOff();
+        }
     }
+
+    _scene.add( new GameEntity{ ShapeMaker::instance()->get(ShapeType::arrow) }, "arrow" );
+
     //debug: set a user-controlable triangle:
     _scene.add(new MovingEntity{ &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 100.f }, "tri");
     _scene["tri"]->transform()->scale(QVector3D{ 2, 4, 1.f });

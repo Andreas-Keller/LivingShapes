@@ -49,6 +49,9 @@ public:
     auto shapesBegin()      { return _shapes.begin(); }
     auto shapesEnd()        { return _shapes.end(); }
 
+    //get a list of all entities within a given range:
+    std::vector<GameEntity*> tagObstacles(GameEntity* center, float radius);
+
 private:
 	void addToList(GameEntity* ent);
 	void removeFromList(GameEntity* ent);

@@ -23,7 +23,7 @@ public:
 private:
 	float 	_distance;
 	float 	_radius;
-	float 	_jitter;
+    float 	_jitter;
 	
     QVector3D 		_target;
 };

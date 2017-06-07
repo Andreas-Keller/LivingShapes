@@ -12,6 +12,7 @@
 #include <QVector2D>
 #include <QColor>
 
+/* Rectangle ------------------------------------------------------------ */
 class Rectangle : public Shape {
 public:
     Rectangle(
@@ -29,7 +30,7 @@ private:
 };
 
 
-
+/* Triangle ------------------------------------------------------------ */
 class TriangleEqualSided : public Shape {
 public:
     TriangleEqualSided(
@@ -46,7 +47,7 @@ private:
     QVector2D _widthAndHeight;
 };
 
-
+/* Circle ------------------------------------------------------------ */
 class Circle : public Shape {
 public:
     Circle(
@@ -66,7 +67,7 @@ private:
     int   _segments;
 };
 
-
+/* Line ------------------------------------------------------------ */
 class Line : public Shape {
 public:
     Line(QOpenGLShaderProgram* shader, const QVector3D& start, const QVector3D &end,
@@ -76,7 +77,7 @@ public:
     //need to override the draw function here:
     virtual void draw(QOpenGLShaderProgram *shader) override;
 
-private:
+protected:
     virtual void initVertices(std::vector<Vertex> &vertices,
                               std::vector<int> &indices) override;
 
@@ -85,6 +86,18 @@ private:
     QVector3D   _start;
     QVector3D   _dir;
     float       _kMax;
+};
+
+/* Arrow ------------------------------------------------------------ */
+class Arrow : public Line {
+public:
+    Arrow(QOpenGLShaderProgram* shader, const QVector3D& start, const QVector3D &end,
+         const QColor& color = QColor(150, 150, 150));
+    ~Arrow();
+
+private:
+    virtual void initVertices(std::vector<Vertex> &vertices,
+                              std::vector<int> &indices) override;
 };
 
 #endif // CONCRETESHAPES_H

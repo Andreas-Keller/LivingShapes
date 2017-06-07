@@ -43,7 +43,9 @@ SOURCES += main.cpp\
     controlwindow.cpp \
     objpicker.cpp \
     winmsg.cpp \
-    Grafics/renderer.cpp
+    Grafics/renderer.cpp \
+    Steering/obstacleavoider.cpp \
+    Grafics/debugrenderer.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -64,7 +66,9 @@ HEADERS  += mainwindow.h \
     controlwindow.h \
     objpicker.h \
     winmsg.h \
-    Grafics/renderer.h
+    Grafics/renderer.h \
+    Steering/obstacleavoider.h \
+    Grafics/debugrenderer.h
 
 FORMS    += mainwindow.ui \
     controlwindow.ui
@@ -79,4 +83,6 @@ DISTFILES += \
     Shaders/final.vert.glsl \
     Shaders/final.frag.glsl \
     Shaders/gaussianBlur.frag.glsl \
-    Shaders/gaussianBlur.vert.glsl
+    Shaders/gaussianBlur.vert.glsl \
+    Shaders/debug.vert.glsl \
+    Shaders/debug.frag.glsl
