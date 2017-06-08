@@ -14,7 +14,6 @@ Wander::Wander(float distance, float radius, float jitter)
 
 Wander::~Wander() {}
 
-
 QVector3D Wander::update(MovingEntity* owner) {
 	//add a random displacment to the target:
     _target += QVector2D{ Randomizer::randFloat(0, 1) * _jitter,

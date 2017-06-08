@@ -7,16 +7,27 @@ MovingEntity::MovingEntity(Scene* scene, Shape *shape, float mass, const QVector
       _mass     { mass },
       _v        { initialVelocity },
       _maxF     { 2.f },
+      _maxSpeed { 2.f },
       _steering { this, scene },
-      _tracker  { false }
+      _tracker  { false },
+      _arrow 	{ new GameEntity {
+                  ShapeMaker::instance()->get(ShapeType::arrow) } }
 {
     Q_ASSERT(scene);
-    _steering.wanderOn();
 }
 
 MovingEntity::~MovingEntity()
 {
     //deletion happens in class scene
+}
+
+void MovingEntity::draw(QOpenGLShaderProgram *shader) {
+    if (_shape) {
+        _shape->setMatrix(_transform.matrix());
+        _shape->draw(shader);
+    }
+    //_aabbShape.draw(shader);
+    _arrow->draw(shader);
 }
 
 void MovingEntity::update(int deltaTime) {
@@ -40,7 +51,13 @@ void MovingEntity::update(int deltaTime) {
 
     //update the aabb:
     _aabb.update(_transform.matrix());
-    _aabbShape.update();
+    //_aabbShape.update();
+
+    //update the force arrow:
+    _arrow->transform()->setPos(this->transform()->pos());
+    _arrow->transform()->lookAt(QVector2D{ force.x(), force.y() });
+    _arrow->transform()->scale(force.length() / 20.f);
+    _arrow->update(deltaTime);
 
     _tracker = false;
 }

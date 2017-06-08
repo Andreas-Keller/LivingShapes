@@ -3,8 +3,8 @@
 GameEntity::GameEntity(Shape *shape, EntType type)
     : _shape    { shape },
       _aabb     { Vertex::extractPositions(_shape->vertices()) },
-      _type     { type },
-      _aabbShape{ _shape->shader(), _aabb }
+      _type     { type }//,
+      //_aabbShape{ _shape->shader(), _aabb }
 {
     Q_ASSERT(_shape);
 }
@@ -15,12 +15,8 @@ GameEntity::~GameEntity() {
 
 void GameEntity::update(int deltaTime)
 {
-    //here we can start applying ai-stuff
-    //for now just a test:
-    //_transform.setRotationZ(_transform.rotationZ() + float(deltaTime / 10.0));
-
     _aabb.update(_transform.matrix());
-    _aabbShape.update();
+    //_aabbShape.update();
 }
 
 void GameEntity::draw(QOpenGLShaderProgram* shader)
@@ -29,5 +25,5 @@ void GameEntity::draw(QOpenGLShaderProgram* shader)
         _shape->setMatrix(_transform.matrix());
         _shape->draw(shader);
     }
-    _aabbShape.draw(shader);
+    //_aabbShape.draw(shader);
 }

@@ -39,7 +39,7 @@ protected:
 
     EntType _type;
 
-    AABBShape _aabbShape;               //purely for debugging
+    //AABBShape _aabbShape;               //purely for debugging
 };
 
 #endif // GAMEENTITY_H

@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     winmsg.cpp \
     Grafics/renderer.cpp \
     Steering/obstacleavoider.cpp \
-    Grafics/debugrenderer.cpp
+    Grafics/debugrenderer.cpp \
+    Steering/arrive.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -68,7 +69,8 @@ HEADERS  += mainwindow.h \
     winmsg.h \
     Grafics/renderer.h \
     Steering/obstacleavoider.h \
-    Grafics/debugrenderer.h
+    Grafics/debugrenderer.h \
+    Steering/arrive.h
 
 FORMS    += mainwindow.ui \
     controlwindow.ui
