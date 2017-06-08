@@ -39,7 +39,7 @@ public:
     inline float radius() {
         float width = _max.x() - _min.x();
         float height = _max.y() - _min.y();
-        return (width > height)? width : height;
+        return (width > height)? width / 2.f : height / 2.f;
     }
 
 private:

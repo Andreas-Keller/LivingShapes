@@ -82,15 +82,20 @@ GameEntity* Scene::get(const std::string& name) {
 }
 
 std::vector<GameEntity*> Scene::tagObstacles(GameEntity *center, float radius) {
+    //debug:
+    for (auto& E : _entities) E.second->shape()->setColor(QVector3D{ 1.f, 0.f, 0.f });
 
     std::vector<GameEntity*> tagged;
     float rSquared = radius * radius;
-
+    WinMsg::add("Tattgin all objs in radius " + std::to_string(radius));
+    WinMsg::add("<b>List of all tagged objs:</b>");
     for (auto& E : _entities) {
         if (E.second == center) continue; //do not self-tag
+        if (E.second->type() == EntType::light) continue; //do not tag lights
         QVector3D dir = E.second->transform()->pos() - center->transform()->pos();
         if (dir.lengthSquared() <= rSquared) {
             tagged.push_back(E.second);
+            WinMsg::add(E.first);
         }
     }
     return tagged;

@@ -138,7 +138,7 @@ void GLWidget::initializeGL()
         for (int y = -20; y <= 20; y+=7) {
             std::string name = "Entity_" + std::to_string(x) + "_" + std::to_string(y);
             _scene.add(
-                new GameEntity{ ShapeMaker::instance()->get(ShapeType::rectangle) },
+                new GameEntity{ new Rectangle{ _renderer->shader(), QVector2D{1.f, 1.f }, QColor{ 250, 0, 100 } } },
                 name);
             _scene[name]->transform()->setPos(QVector3D{ x, y, 0.0f });
             _scene[name]->transform()->scale(QVector3D(1, 2, 1.f));

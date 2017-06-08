@@ -28,6 +28,9 @@ public:
 
     virtual void resize(int width, int height);
 
+    //getter for the shape shader:
+    QOpenGLShaderProgram* shader() { return _shader[SCENE]; }
+
 protected:
     //private enum for indexing the shader and fbo arrays:
     enum Shaders { SCENE, LIGHTS, FINAL };
