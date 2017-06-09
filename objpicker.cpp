@@ -42,3 +42,17 @@ QVector3D ObjPicker::mouseWorldPos(const QPoint& mousePos) const {
     QVector3D glMouse = { glX, -glY, 0.f };
     return (M * glMouse);
 }
+
+QPoint ObjPicker::worldScreenPos(const QVector3D &pos) {
+
+    //bring the world coordinates into GL-coordinates:
+    QMatrix4x4 M = (_cam->orthoMatrix() * _cam->viewMatrix());
+    QVector3D glPos = M * pos;
+    glPos.setY(-glPos.y());
+
+    //bring the GL-coordinates to screen-coordinates:
+    float screenX = (glPos.x() + 1.f) * 0.5f*float(_window->width());
+    float screenY = (glPos.y() + 1.f) * 0.5f*float(_window->height());
+
+    return QPoint{ int(screenX), int(screenY) };
+}

@@ -18,6 +18,7 @@
 #include "Scene.h"
 #include "camera.h"
 #include "controlwindow.h"
+#include "entitywindow.h"
 #include "objpicker.h"
 
 //convenience macro used in the destructor:
@@ -46,8 +47,9 @@ protected:
     virtual void    paintGL() override;
     virtual void    resizeGL(int width, int height) override;
 
-    //init the debug window:
+    //init the debug and the entity window:
     void initDebugWin();
+    void initEntityWin();
 
     //sends shapes data to the debug win if we picked an object:
     void sendShapeInfo(GameEntity *entity);
@@ -60,6 +62,9 @@ private:
 
     //window for debugging (and later maybe for user-options)
     controlWindow*            _debugWin;
+
+    //window that pops up when we click on an entity:
+    EntityWindow*             _entityWin;
 
     //For object picking with the mouse:
     ObjPicker                 _picker;

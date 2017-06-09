@@ -9,7 +9,6 @@ controlWindow::controlWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->debugBox->resize(this->size());
     ui->debugBox->move(0, 0);
-    ui->debugBox->setText("Hello World");
 }
 
 controlWindow::~controlWindow()
@@ -30,8 +29,6 @@ void controlWindow::onResize(int width, int height)
 
     //resize the text-box to cover the full widget:
     ui->debugBox->resize(x, y);
-    ui->debugBox->append(QString::fromStdString("Debug Box X: " + std::to_string(x)));
-    ui->debugBox->append(QString::fromStdString("Debug Box Y: " + std::to_string(y)));
 }
 
 void controlWindow::addText(const std::string &msg) {

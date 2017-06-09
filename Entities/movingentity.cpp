@@ -7,7 +7,7 @@ MovingEntity::MovingEntity(Scene* scene, Shape *shape, float mass, const QVector
       _mass     { mass },
       _v        { initialVelocity },
       _maxF     { 2.f },
-      _maxSpeed { 2.f },
+      _maxSpeed { 10.f },
       _steering { this, scene },
       _tracker  { false },
       _arrow 	{ new GameEntity {
@@ -34,8 +34,7 @@ void MovingEntity::update(int deltaTime) {
     //get the steering force:
     QVector3D force = _steering.update(deltaTime, _tracker);
 
-    if (force.lengthSquared() > 0.01f)
-        _a = force / _mass;
+    _a = force / _mass;
 
     //basic Newton:
     _v += _a*deltaTime / 1000.f;

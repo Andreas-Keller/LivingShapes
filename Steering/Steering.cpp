@@ -3,13 +3,14 @@
 #include "Entities/movingentity.h"
 
 Steering::Steering(MovingEntity *owner, Scene* scene)
-    : _wanderOn { false },
-      _avoiderOn{ true },
-      _arriveOn { false },
-      _owner    { owner },
-      _scene	{ scene },
-      _updateTime { 500 },
-      _accumTime  { 0 }
+    : _wanderOn     { true },
+      _avoiderOn    { true },
+      _arriveOn     { true },
+      _formationOn  { false },
+      _owner        { owner },
+      _scene        { scene },
+      _updateTime   { 500 },
+      _accumTime    { 0 }
 {
     Q_ASSERT(_scene && _owner);
 }
@@ -31,6 +32,7 @@ QVector3D Steering::update(size_t timestep, bool tracker) {
     _force = QVector3D{ 0.f, 0.f, 0.f };
 
     if (_avoiderOn) _force += _avoider.update(_owner, _scene);
+    if (_formationOn && _force.length() < _owner->maxForce()) _force += _formation.update(_owner);
     if (_arriveOn && _force.length() < _owner->maxForce()) _force += _arrive.update(_owner);
     if (_wanderOn && _force.length() < _owner->maxForce()) _force += _wander.update(_owner);
 

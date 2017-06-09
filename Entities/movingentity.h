@@ -27,6 +27,7 @@ public:
 
     void setMaxForce(float val)            { _maxF = val; }
     void setMaxSpeed(float val)            { _maxSpeed = val; }
+    void setMass    (float val)            { _mass = val; }
 
     //getters:
     QVector3D velocity() const      { return _v; }

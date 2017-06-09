@@ -18,10 +18,10 @@ QVector3D Arrive::update(MovingEntity *owner) {
 
     //calculate speed:
     float speed = dist / (static_cast<float>(_speedType) * _speedTweaker);
-    //speed = std::fmin(owner->maxSpeed(), speed);
+    speed = std::fmin(owner->maxSpeed(), speed);
 
     //calculate desired velocity:
     QVector3D desiredVelocity = toTarget * speed / dist;
 
-    return (desiredVelocity - 10.f * owner->velocity());
+    return (desiredVelocity - owner->velocity());
 }

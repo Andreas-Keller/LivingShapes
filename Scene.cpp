@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+#include "Entities/movingentity.h"
+
 Scene::Scene()
     : _counter { 0 }
 {}
@@ -79,6 +81,13 @@ GameEntity* Scene::get(const std::string& name) {
 	auto ent = _entities.find(name);
 	if (ent == _entities.end()) throw SceneError{ ("<Scene::get> Did not find Game Entity named " + name).c_str() };
     return ent->second;
+}
+
+MovingEntity* Scene::getMoving(const std::__cxx11::string &name) {
+    GameEntity* entity = get(name);
+    if (entity->type() != EntType::moving) throw SceneError{
+        ("<Scene::getMoving> Entity named " + name + " is not a of Type MovingEntity").c_str() };
+    return static_cast<MovingEntity*>(entity);
 }
 
 std::vector<GameEntity*> Scene::tagObstacles(GameEntity *center, float radius) {

@@ -22,6 +22,9 @@ public:
     //converts the position of the mouse on-screen to its position in the game-world
     QVector3D mouseWorldPos(const QPoint&) const;
 
+    //converts a world position into a screen position:
+    QPoint worldScreenPos(const QVector3D& pos);
+
 private:
     Scene*      _scene;
     Camera*     _cam;

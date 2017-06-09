@@ -28,6 +28,7 @@ QVector3D ObstacleAvoider::update(MovingEntity *owner, Scene *scene) {
     float maxAcceleration = owner->maxForce() / owner->mass();
     float speedSquared = owner->velocity().lengthSquared();
     float brakingDistance = speedSquared / (2.f * maxAcceleration);
+	brakingDistance += owner->aabb()->radius();
 
     //now we need a list of all entities within the braking distance:
     std::vector<GameEntity*> objsInRange = scene->tagObstacles(owner, brakingDistance);
@@ -40,8 +41,6 @@ QVector3D ObstacleAvoider::update(MovingEntity *owner, Scene *scene) {
     //loop through all possible obstacles:
     QMatrix4x4 M = owner->transform()->matrix().inverted();
     //owner->aabb()->update(M);
-
-    WinMsg::add("<ObstacleAvoider> Objs in range: " + std::to_string(objsInRange.size()));
 
     for (auto current = objsInRange.begin(); current != objsInRange.end(); current++)
     {

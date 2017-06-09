@@ -16,6 +16,8 @@
 #include "Entities/gameentity.h"
 #include "Entities/light.h"
 
+class MovingEntity;
+
 //small class which can be thrown as Exception:
 class SceneError : public std::exception {
 public:
@@ -39,6 +41,9 @@ public:
 
 	//get a pointer to a game Entity with a given name:
 	GameEntity* get(const std::string& name);
+
+    //get a pointer to a MovingEntity with a given name:
+    MovingEntity* getMoving(const std::string& name);
 
 	//overload operators [] for convenience:
 	GameEntity* operator [] (const std::string& name) {

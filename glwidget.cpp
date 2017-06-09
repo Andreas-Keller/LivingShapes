@@ -16,13 +16,14 @@ GLWidget::GLWidget(QWidget* parent)
     :   QOpenGLWidget{ parent },
         _cam        { this->width(), this->height() },
         _debugWin   { nullptr },
+        _entityWin  { nullptr },
         _picker     { &_scene, &_cam, this }
 {
     setMouseTracking(true);
 }
 
 GLWidget::~GLWidget() {
-    DEL(_debugWin)
+    DEL(_debugWin);
 }
 
 
@@ -30,9 +31,17 @@ void GLWidget::mousePressEvent(QMouseEvent *event) {
     _mousePos = event->pos();
     setCursor(QCursor{ Qt::CursorShape::OpenHandCursor });
 
-    //display debug info if we hit a shape with the cursor:
+    //display entity Window if we hit a shape with the cursor:
     auto entity = _picker.pick(_mousePos);
-    if (entity) sendShapeInfo(entity);
+    if (entity) {
+        sendShapeInfo(entity);
+        _entityWin->move(_picker.worldScreenPos(entity->transform()->pos()));
+        _entityWin->show();
+    }
+    else {
+        _entityWin->hide();
+    }
+
 
     //set a target for our moving entity on the mouse pos:
     static_cast<MovingEntity*>(_scene["Mov"])
@@ -119,6 +128,7 @@ void GLWidget::initializeGL()
 {
 	//initialize debug window:
     initDebugWin();
+    initEntityWin();
 
 	//let window get input if its has mouse focus
     setFocusPolicy(Qt::StrongFocus);
@@ -132,6 +142,7 @@ void GLWidget::initializeGL()
     //generate several lights
 
     _scene.add(new Light{ "light2", QVector3D{ 0.f, 0.f, 0.f }, 16.f }, "light");
+
 
     //generate static entities:
     for (int x = -20; x <= 20; x+=7) {
@@ -149,6 +160,26 @@ void GLWidget::initializeGL()
     _scene.add(new MovingEntity{
                &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 50.f}, "Mov");
     _scene["Mov"]->transform()->scale(QVector3D{ 1.f, 2.f, 1.f });
+    _scene.getMoving("Mov")->steering()->wanderOff();
+
+    //generate two entities that follow their leader:
+    _scene.add(new MovingEntity{
+               &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 50.f}, "E1");
+    _scene["E1"]->transform()->setPos(QVector3D{ 1.f, -1.f, 0.f });
+    _scene["E1"]->transform()->scale(QVector3D{ 1.f, 2.f, 1.f });
+    _scene.getMoving("E1")->steering()->formation()->setLeader(_scene.getMoving("Mov"));
+    _scene.getMoving("E1")->steering()->formation()->setOffset(QVector3D{ 1.f, -1.f, 0.f });
+    _scene.getMoving("E1")->steering()->formationOn();
+    _scene.getMoving("E1")->steering()->wanderOff();
+
+    _scene.add(new MovingEntity{
+               &_scene, ShapeMaker::instance()->get(ShapeType::triangle), 50.f}, "E2");
+    _scene["E2"]->transform()->setPos(QVector3D{ -1.f, -1.f, 0.f });
+    _scene["E2"]->transform()->scale(QVector3D{ 1.f, 2.f, 1.f });
+    _scene.getMoving("E2")->steering()->formation()->setLeader(_scene.getMoving("Mov"));
+    _scene.getMoving("E2")->steering()->formation()->setOffset(QVector3D{ -1.f, -1.f, 0.f });
+    _scene.getMoving("E2")->steering()->formationOn();
+    _scene.getMoving("E2")->steering()->wanderOff();
 
 
     /* END OF TEST CODE --------------------------------------------------------------------- */
@@ -197,7 +228,15 @@ void GLWidget::initDebugWin() {
     _debugWin->show();
 }
 
+void GLWidget::initEntityWin() {
+    _entityWin = new EntityWindow{ this };
+    _entityWin->setWindowFlags(Qt::WindowStaysOnTopHint);
+    _entityWin->setWindowTitle("Entity Controler");
+    _entityWin->hide();
+}
+
 void GLWidget::sendShapeInfo(GameEntity* entity) {
+    _entityWin->sendShapeInfo(entity);
 
     _debugWin->addText("<b>Properties of the object you clicked on:</b>");
     _debugWin->addText("Type id:\t" + std::to_string((int)entity->type()));

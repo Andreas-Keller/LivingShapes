@@ -46,7 +46,9 @@ SOURCES += main.cpp\
     Grafics/renderer.cpp \
     Steering/obstacleavoider.cpp \
     Grafics/debugrenderer.cpp \
-    Steering/arrive.cpp
+    Steering/arrive.cpp \
+    Steering/formation.cpp \
+    entitywindow.cpp
 
 HEADERS  += mainwindow.h \
     glwidget.h \
@@ -70,10 +72,13 @@ HEADERS  += mainwindow.h \
     Grafics/renderer.h \
     Steering/obstacleavoider.h \
     Grafics/debugrenderer.h \
-    Steering/arrive.h
+    Steering/arrive.h \
+    Steering/formation.h \
+    entitywindow.h
 
 FORMS    += mainwindow.ui \
-    controlwindow.ui
+    controlwindow.ui \
+    entitywindow.ui
 
 DISTFILES += \
     Shaders/simple.vert.glsl \
